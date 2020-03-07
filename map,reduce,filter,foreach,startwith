@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ES6 function</title>
+    </head>
+    <body>
+        <script>
+            let [json, arr, num, str] = [{a:1, b:2}, [1, 2, 3], 3, 'sda'];
+            console.log(json, arr, num, str);
+
+            let score = ['sfs', 'sef', 'efs'];
+            let result = score.map(para=>para != null ? '!null' : 'null');
+            console.log(score);
+            console.log(result);
+
+            let score1 = [1, 2, 3, 4];
+            let result1 = score1.reduce((sum, data, index)=>index!=this.length-1 ? (sum+data)/index:(sum+data)/(this.length-1));
+            console.log(result1);
+            
+            let sample = [
+                {title:'sample1', price:100},
+                {title:'sample2', price:200},
+                {title:'sample3', price:300},
+            ];
+
+            let result3 = sample.filter(json=>json.price>=200);
+            console.log(result3);
+            
+            let str = 'http://www.google.com';
+
+            switch(str.startsWith) {
+                case 'http://': 
+                    console.log(str);
+                    break;
+
+                case 'https://':
+                    console.log("SSL");
+                    break;
+                default:
+                    console.log("error");
+            }
+
+            let title = 'New standards';
+            let response = `<title>${title}</title>`;
+
+        </script>
+    </body>
+</html>
