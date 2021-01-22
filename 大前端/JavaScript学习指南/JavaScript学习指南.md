@@ -108,9 +108,10 @@ paper.view.draw();
 - fillColor(color)
 
 sample:
-![circle](./img/circle.png)
+![circle][01]
 
 ###### 多个圆情况
+
 ```javascript
 'use strict'
 
@@ -128,7 +129,7 @@ for(var x = 25; x < 400; x += 50){
 paper.view.draw();
 ```
 sample:
-![muticirlce](./img/muticircle.png)
+![muticirlce][02]
 
 ###### 用户输入
 根据用户而出现的情况：
@@ -144,7 +145,7 @@ userInputTool.onMouseDown = event => {
 - event.point: 事件的位置。
 
 sample:
-![eventcircle](./img/eventcircle.png)
+![eventcircle][03]
 
 ###### 文本文字
 具有表现力的`Hello World`
@@ -159,7 +160,7 @@ text.fontSize = 20;
 text.content = 'Hello World';
 ```
 sample:
-![newTypeText](./img/newTypeText.png)
+![newTypeText][04]
 
 ## 常用开发工具
 - Git
@@ -1315,7 +1316,7 @@ NPM模块|不是一个核心module，不以`/, ./, ../`开始|require('koa')
 
 #### 全局模块
 
-![nodeModules](./img/nodeModules.jpg)
+![nodeModules][05]
 
 - 详情阅读NodeApi
 
@@ -1623,3 +1624,10 @@ const server = http.createServer((req, res) => {
 	- Codecademy - JS
 	- Microsot tuto [JS](http://bit.ly/ms_js_intro)
 - stack overflow
+
+[01]: ./img/circle.png "circle"
+[02]: ./img/muticircle.png "muticircle"
+[03]: ./img/eventcircle.png "eventcircle"
+[04]: ./img/newTypeText.png "TypeText"
+[05]: ./img/nodeModules.jpg "nodeModules"
+
