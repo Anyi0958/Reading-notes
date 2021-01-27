@@ -25,6 +25,7 @@ mail.domain.cn
 127.0.0.1 mail.domain.cn
 ```
 ### 3.打开25端口
+
 - 确保服务器上的110、143、25的端口是对外开放的
 
 #### 如果不能打开25端口
@@ -63,6 +64,7 @@ service postfix restart
 ```
 
 ### 4.配置postfix
+
 #### 安装
 ```shell
 [root@mail ~]# yum -y install postfix.x86_64 dovecot.x86_64  cyrus-sasl
@@ -106,6 +108,7 @@ smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,rejec
 ```
 
 ##### 配置说明
+
 - smtpd_sasl_auth_enable = yes //开启认证
 - smtpd_sasl_security_options = noanonymous //不允许匿名发信
 - mynetworks = 127.0.0.0/8 //允许的网段，如果增加本机所在网段就会出现允许不验证也能向外域发信
@@ -116,6 +119,7 @@ smtpd_recipient_restrictions = permit_mynetworks,permit_sasl_authenticated,rejec
 - 缺少SPF记录
 
 ###### 1.安装SPF模块(Python)
+
 ```shell
 wget https://launchpad.net/pypolicyd-spf/1.1/1.1/+download/pypolicyd-spf-1.1.tar.gz
 tar -zxvf pypolicyd-spf-1.1.tar.gz
@@ -125,6 +129,7 @@ python setup.py install
 ```
 ###### 2.配置Postfix支持SPF检查
 ```shell
+# vi /etc/postfix/master.cf
 添加以下内容：
 ## spf check
 policy-spf unix -       n       n       -       -       spawn
