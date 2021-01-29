@@ -308,6 +308,18 @@ kdent@ora.com xx@moxii.com
 - 删除队列邮件： `postsuper -d ALL`
 
 ## 重新排队
+- `postsuper -r ALL`
+
+## 显示邮件内容
+- `postcat -q queueId`
+
+## 清空邮件
+- 清空队列里的邮件：`postqueue -f`
+
+## E-mail 与 DNS
+
+
+
 
 
 
