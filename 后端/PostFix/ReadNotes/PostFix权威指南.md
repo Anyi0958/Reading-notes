@@ -871,6 +871,7 @@ smtpd_recipient_restrictions =
 5. 重启
 
 #### TLS/SMTP client的服务器设定
+
 寄信到其他服务器。
 1. 打算让smtp和smtpd用相同的证书.
 `smtp_use_tls = yes`: 启动TLS支持
