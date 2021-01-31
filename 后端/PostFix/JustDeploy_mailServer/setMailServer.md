@@ -146,6 +146,7 @@ smtpd_recipient_restrictions =
 ```
 
 #### 修改dovecot
+
 ```shell
 [root@mail ~]# vim /etc/dovecot/dovecot.conf
 #修改以下配置
