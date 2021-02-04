@@ -108,7 +108,7 @@ Git 目录
 
 #### 常用于保存工作进度
 
-`git stash [save message] ``
+`git stash save [message]`
 
 #### 查看list
 

@@ -1,3 +1,14 @@
+暂存问题：
+1. weak maps, weak sets
+2. 迭代器和生成器
+3. yield
+4. setTimeout, setInterval and clearInterval
+5. promise
+6. prototype
+7. reflect
+8. proxy
+9. 冒泡事件
+
 [TOC]
 
 # 读书笔记
