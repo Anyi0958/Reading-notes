@@ -9,6 +9,11 @@ JavaScript高级程序设计第四版 目录
 
 - <p style="color:red;">此文不涉及基础语法，如有需要可观看<a href="https://www.runoob.com/js/js-tutorial.html">菜鸟教程</a></p>
 
+## 个人体会
+
+第四版这本书啃起来有点难啃。迭代器，原型链，promise还是有一定了解才行，否则阅读起来有点生硬。
+node毕竟是单线程非阻塞的语言，为了模拟多线程，会出现async和await这种东西，精髓是在回调函数上。
+
 # 推荐
 
 - 《JavaScript高级程序设计》（第四版）
@@ -73,6 +78,7 @@ XHTML是将HTML作为XML重新包装的结果。
 - `use strict`
 
 ## Symbol类型
+
 `ECMAScript6`新增数据类型
 - 符号是原始值
 - 符号实例时唯一、不可变的
@@ -214,12 +220,421 @@ class Foo {
 
 let f = new Foo();
 
-console.log(f[Symbol.asyncIterator]());
+console.log(f[Symbol.asyncIterator]());	// Object [AsyncGenerator] {}
 ```
 - 这个由`Symbol.asyncIterator`生成的对象应该通过其`next()`方法陆续返回`Promise`实例
 - 既可以通过显示调用`next()`方法返回，也可以通过隐式调用异步生成器函数返回
+```js
+class Emitter {
+    constructor(max) {
+        this.max = max;
+        this.asyncIdx = 0;
+    }
+    // 异步迭代器的API
+    async *[Symbol.asyncIterator] () {
+        while(this.asyncIdx < this.max) {
+            yield new Promise((resolve) => resolve(this.asyncIdx++));
+        }
+    }
+}
 
+async function asyncCount() {
+    let emitter = new Emitter(5);
+
+    // 循环时，异步迭代操作
+    for await(const x of emitter){
+        console.log(x);
+    }
+}
+
+asyncCount();
+```
+#### 注意
+- `symbol.asyncIterator`只支持ES2018规范
+
+### Symbol.hasInstance
+- 该方法决定一个构造器对象是否认可一个对象时它的实例，由`instanceof`操作符使用
+- `instanceof`操作符可以确定一个对象实例的原型链上是否有原型
+```js
+function Foo() {}
+let f = new Foo();
+console.log(f instanceof Foo);  // true
+
+class Bar{}
+let b = new Bar();
+console.log(b instanceof Bar);  // true
+```
+- `instanceof`会使用`Symbol.hasInstance`确定关系
+
+#### Symbol.hasInstance为键
+```js
+function Foo() {}
+let f = new Foo();
+console.log(Foo[Symbol.hasInstance](f));  // true
+
+class Bar{}
+let b = new Bar();
+console.log(Bar[Symbol.hasInstance](b));  // true
+```
+#### 重新定义函数
+- 这个属性定义在`function`原型上，默认所有函数和类上都可以调用
+- 可以在继承的类上通过静态方法重新定义这个函数
+```js
+class Bar{};
+class Baz extends Bar {
+    static [Symbol.hasInstance]() {
+        return false;
+    }
+}
+
+let b = new Baz();
+console.log(Bar[Symbol.hasInstance](b));  // true
+console.log(b instanceof Bar);  //true
+console.log(Baz[Symbol.hasInstance](b));  //false
+console.log(b instanceof Baz);  //false
+
+```
+
+### Symbol.isConcatSpreadable
+
+- 布尔值，如果是`true`，意味着对象应该用`Array.prototype.concat()`打平其数组元素
+- `Array.prototype.concat()`会根据接收到的对象类型选择如何将一个类数组对象拼接成数组实例
+- false: 默认追加到数组末尾
+- true: 被打平到数组实例
+- 其他不是类数组对象的对象，在`Symbol.isConcatSpreadable`被设置为true的情况下忽略
+```js
+let initial = ['foo'];
+
+let array = ['bar'];
+// false
+console.log(array[Symbol.isConcatSpreadable]);  // undefined
+console.log(initial.concat(array));  // ['foo', 'bar']
+array[Symbol.isConcatSpreadable] = false;
+console.log(initial.concat(array));  //['foo', Array(1)]
+// true
+let arrayLikeObject = { length: 1, 0: 'baz'};
+console.log(arrayLikeObject[Symbol.isConcatSpreadable]);  //undefined
+console.log(initial.concat(arrayLikeObject));  //['foo', {...}]
+arrayLikeObject[Symbol.isConcatSpreadable] = true;
+console.log(initial.concat(arrayLikeObject));  //['foo', 'baz']
+// set
+let otherObject = new Set() . add('qux');
+console.log(otherObject[Symbol.isConcatSpreadable]);  //undefined
+console.log(initial.concat(otherObject));  // ['foo', Set(1)]
+otherObject[Symbol.isConcatSpreadable] = true;
+console.log(initial.concat(otherObject));  // ['foo']
+```
+![3-Symbol.isconcatSpreadable][03]
+
+### Symbol.iterator
+
+- 该方法返回对象默认的迭代器，由`for-of`使用
+```js
+class Foo {
+    *[Symbol.iterator]() {}
+}
+
+let f = new Foo();
+
+console.log(f[Symbol.iterator]);
+```
+![4-symbol.iterator.js.png][04]
+
+- 显示next()
+- 隐式生成器函数
+```js
+class Emitter{
+    constructor(max) {
+        this.max = max;
+        this.idx = 0;
+    }
+
+    *[Symbol.iterator]() {
+        while(this.idx < this.max){
+            yield this.idx++;
+        }
+    }
+}
+
+function count() {
+    let emitter = new Emitter(5);
+
+    for (const x of emitter){
+        console.log(x);
+    }
+}
+
+count();
+```
+### symbol.match
+- 正则表达式法，用正则表达式去匹配字符串
+- 用`String.prototype.match()`
+- `String.prototype.match()`会使用`Symbol.match`为键的函数来对正则表达式求值
+- 正则表达式的原型上默认有这个函数的定义，因此所有正则表达式实例默认是这个`String`方法的有效参数
+```js
+console.log(RegExp.prototype[Symbol.match]);
+
+console.log('foobar'.match(/bar/));
+```
+![5-symbolmatch][05]
+- 如果传入非正则表达式值，会导致该值被转换为`regexp`对象
+- 重新定义`symbol.match`，可直接使用实例
+```js
+class FooMatcher {
+    static [Symbol.match](target){
+        return target.includes('foo');
+    }
+}
+
+console.log('foobar'.match(FooMatcher));    // true
+console.log('barbaz'.match(FooMatcher));    //false
+
+class StringMatcher{
+    constructor(str){
+        this.str = str;
+    }
+
+    [Symbol.match](target){
+        return target.includes[this.str];
+    }
+}
+
+console.log('foobar'.match(new StringMatcher('foo')));  // true
+console.log('barbaz'.match(new StringMatcher('qux')));  //false
+```
+
+### symbol.replace
+- 替换一个字符串中匹配的子串，由`String.prototype.replace()`使用
+```js
+console.log(RegExp.prototype[Symbol.replace]);
+
+console.log('foobarbaz'.replace(/bar/, 'qux'));
+```
+![6-replace][06]
+
+```js
+class FooReplacer {
+    static [Symbol.replace] (target, replacement) {
+        return target.split('foo').join(replacement);
+    }    
+}
+
+console.log('barfoobaz'.replace(FooReplacer, 'qux'));
+
+class StringReplacer {
+    constructor(str){
+        this.str = str;
+    }
+    
+    [Symbol.replace](target, replacement){
+        return target.split(this.str).join(replacement);
+    }
+}
+
+console.log('barfoobaz'.replace(new StringReplacer('foo'), 'qux'));
+```
+![7-replace2][07]
+
+### Symbol.search
+- 返回字符串中匹配正则表达式的索引
+```js
+class FooSearch {
+    static [Symbol.search](target) {
+        return target.indexOf('foo');
+    }
+}
+
+console.log('foobar'.search(FooSearch));    // 0
+console.log('barfoo'.search(FooSearch));    // 3
+console.log('barbaz'.search(FooSearch));    // -1
+
+class StringSearch {
+    constructor(str) {
+        this.str = str;
+    }
+
+    [Symbol.search](target){
+        return target.indexOf(this.str);
+    }
+}
+
+console.log('foobar'.search(new StringSearch('foo')));  // 0
+console.log('barfoo'.search(new StringSearch('foo')));  // 3
+console.log('barbaz'.search(new StringSearch('foo')));  // -1
+```
+![8-search][08]
+
+### symbol.species
+- 创建派生对象的构造函数
+- 用`symbol.species`定义静态的获取器(getter)，覆盖新创建实例的原型定义
+```js
+class Bar extends Array {}
+class Baz extends Array {
+    static get [Symbol.species]() {
+        return Array;
+    }
+}
+
+let bar = new Bar();
+console.log(bar instanceof Array);  // true
+console.log(bar instanceof Bar);    // true
+
+bar = bar.concat('bar');
+console.log(bar instanceof Array);  // true
+console.log(bar instanceof Bar);    // true
+
+let baz = new Baz();
+console.log(baz instanceof Array);  // true
+console.log(baz instanceof Baz);    // true
+
+baz = baz.concat('baz');
+console.log(baz instanceof Array);  // true
+console.log(baz instanceof Baz);    // false
+```
+
+### symbol.split
+- 该函数作为创建派生对象的构造函数
+```js
+class FooSplitter {
+    static [Symbol.split](target){
+        return target.split('foo');
+    }
+}
+
+console.log('barfoobaz'.split(FooSplitter));
+
+class StringSplitter {
+    constructor(str){
+        this.str = str;
+    }
+
+    [Symbol.split](target){
+        return target.split(this.str);
+    }
+}
+
+console.log('barfoobaz'.split(new StringSplitter('foo')));
+```
+![9-split][09]
+
+### symbol.toPrimitive
+- 将对象转换为相应的原始值
+```js
+class Foo {}
+let foo = new Foo();
+
+console.log(3 + foo);   
+console.log(3 - foo);
+console.log(String(foo));
+
+class Bar {
+    constructor() {
+        this[Symbol.toPrimitive] = function(hint) {
+            switch(hint) {
+                case 'number':
+                    return 3;
+                case 'string':
+                    return 'string bar';
+                case 'default':
+                default:
+                    return 'default bar';
+            }
+        }
+    }
+}
+
+let bar = new Bar();
+
+console.log(3 + bar);
+console.log(3 - bar);
+console.log(String(bar));
+```
+![10-toPrimitive][10]
+
+### symbol.toStringTag
+- 该字符串用于创建对象的默认字符串描述
+- `Object.prototype.toString()`
+```js
+let s = new Set();
+
+console.log(s);     // Set[0] {}
+console.log(s.toString());      // [Object Set]
+console.log(s[Symbol.toStringTag]); //Tag
+
+class Foo {}
+let foo = new Foo();
+
+console.log(foo);       // Foo {}
+console.log(foo.toString());    // [object Object]
+console.log(foo[Symbol.toStringTag]);   // undefined
+
+class Bar {
+    constructor(){
+        this[Symbol.toStringTag] = 'Bar';
+    }
+}
+let bar = new Bar();
+
+console.log(bar);       // Bar {}
+console.log(bar.toString());    // [object object]
+console.log(bar[Symbol.toStringTag]);   // bar
+```
+![11-toString][11]
+
+## Object
+- 对象其实就是一组数据和功能的集合
+- `let o = new Object()`
+- Object也是派生其他类的基类，Object类所有属性和方法在派生的对象上同样存在
+
+### 每个Object类的属性和方法
+1. constructor
+2. hasOwnProperty(propertyName)：判断当前对象实例是否存在给定属性
+3. isPrototypeof(object)：判断当前对象是否为另一个对象的原型
+4. propertyIsEnumerable(propertyName)：判定给定的属性是否可以使用
+5. toLocaleString()：返回对象的字符串表示
+6. toString()
+7. valueOf()
+
+## for-in 语句
+- 严格的迭代语句，用于枚举对象中的非符号键属性
+- `for (property in expression) statement`
+
+## for-of 语句
+- 迭代语句，遍历可迭代对象的元素
+- `for (property of expression) statement`
+
+## with语句
+- 将代码作用域设置为特定的对象
+- `with (expression) statement`
+- 主要是针对一个对象反复操作
+```js
+let qs = location.search.substring(1);
+let hostname = location.hostname;
+let url = location.href;
+
+with(location) {
+    let qs = search.substring(1);
+    let hostname = hostname;
+    let url = href;
+}
+```
+- 严格模式不允许使用`with`
+
+## 严格模式的限制
+1. 函数不能以`eval`或者`arguments`作为名称
+2. 函数的参数不能叫做`eval`或者`arguments`
+3. 两个函数的参数不能教同一个名称
+<p style="color: red;">**如果违反以上规则，将会导致语法错误，代码也不会运行**</p>
 
 
 [01]: ./img/1-DOM.png "1-DOM"
 [02]: ./img/2-symbol.png "2-symbol"
+[03]: ./img/3-Symbol.isconcatSpreadable.png "3-Symbol.isconcatSpreadable"
+[04]: ./img/4-symbol.iterator.js.png "4-symbol.iterator.js.png"
+[05]: ./img/5-symbolmatch.png "5-symbolmatch"
+[06]: ./img/6-replace.png "6-replace"
+[07]: ./img/7-replace2.png "7-replace2"
+[08]: ./img/8-search.png "8-search"
+[09]: ./img/9-split.png "9-split"
+[10]: ./img/10-toPrimitive.png "10-toPrimitive"
+[11]: ./img/11-toString.png "11-toString"
