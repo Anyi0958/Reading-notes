@@ -626,6 +626,153 @@ with(location) {
 3. 两个函数的参数不能教同一个名称
 <p style="color: red;">**如果违反以上规则，将会导致语法错误，代码也不会运行**</p>
 
+# 4 变量、作用域和内存
+## 原始值和引用值
+- 原始值：最简单的数据，按值访问
+- 引用值：多个值构成的对象，是保存在内存中的对象
+### 注意：字符串和对象
+- 在很多语言中，字符串是使用对象表示的，被认为是引用类型，但是JS不是
+
+## 复制值
+```js
+let num1 = 5;
+let num2 = num1;
+```
+- 这两个值是完全独立的
+复制前的变量对象：
+|
+:-:|:-:
+|
+num1|5 (Number类型)
+
+复制后的变量对象：
+|
+:-:|:-:
+num2|5 (Number类型)
+num1|5 (Number类型)
+
+```js
+let obj1 = new Object();
+let obj2 = obj1;
+```
+![12-heap][12]
+
+## 执行上下文与作用域
+- 每个上下文都有一个关联的变量对象，而这个上下文中定义的所有变量和函数都存在于这个对象上
+- 全局上下文是最外层的上下文，就是常说的`window`对象
+- 上下文中的代码在执行的时候，会创建变量对象的一个作用域链，这个作用域链决定了各级上下文中的代码在访问变量和函数时的顺序
+
+## 作用域链增强
+执行上下文的种类：
+- 全局上下文
+- 函数上下文
+- eval()调用内部存在
+
+## 变量声明
+```js
+var color = 'blue';
+function getColor(){
+	let color = 'red';
+	{
+		let color = 'green';
+		return color;
+	}
+}
+
+console.log(getColor());	// green
+```
+- 如果要使用全局变量`color`，需要使用`window.color`
+
+### 标识符查找的代价
+- 访问局部变量比访问全局变量要快，因为不用切换作用域
+
+## 垃圾回收
+- JS使用垃圾回收，执行环境负责在代码执行时管理内存
+- 自动内存管理实现内存分配和闲置资源回收
+- 基本思路：确定哪个变量不会再使用，然后释放它占用的内存，每隔一定时间就会自动运行
+- 浏览器标记策略：标记清理和引用计数
+
+### 标记清理
+- JS常用垃圾回收策略是标记清理
+![13-marksweep][13]
+
+### 引用计数
+- 对每个值都记录它被引用的次数
+- 被赋值，引用加1；如果引用的变量被覆盖，引用数减1
+- 垃圾回收程序下次运行的时候会释放引用数为0的值的内存
+#### 存在问题
+```js
+function problem() {
+	let objectA = new Object();
+	let objectB = new Object();
+	
+	objectA.someOtherObject = objectB;
+	objectB.anotherObject = objectA;
+}
+```
+- 引用数永远不会变成0
+
+### 性能
+- IE饱受诟病的地方：它的策略是根据分配数，导致垃圾回收程序过于频繁执行
+
+### 内存管理
+- 优化内存占用的最佳手段是保证在执行代码时只保存必要的数据
+- 解除引用：`variable = null`
+- 解除对一个值的引用不会自动导致相关内存被回收，确保不在上下文，下次垃圾回收时被回收
+#### JS内存特点
+1. 通过`const`和`let`声明提升性能
+2. 隐藏类和删除操作
+3. 内存泄漏
+4. 静态分配和对象池
+##### 对象池
+- 创建一个对象池，用来管理一组可回收的对象
+- 应用程序可以向这个对象池请求一个对象、设置其属性并使用，操作完后还给对象池
+- 由于没有发生对象初始化，垃圾回收探测不会发现有对象更替，自然垃圾回收程序不会频繁运行
+```js
+function addVectorRaw(a, b){
+    let resultant = new Vector();
+    resultant.x = a.x + b.x;
+    resultant.y = a.y + b.y;
+
+    return resultant;
+}
+
+function addVector(a, b, resultant){
+    resultant.x = a.x + b.x;
+    resultant.y = a.y + b.y;
+
+    return resultant;
+}
+
+// 对象池的伪实现
+// vectorPool是已有的对象池
+let v1 = vectorPool.allocate();
+let v2 = vectorPool.allocate();
+let v3 = vectorPool.allocate();
+let v4 = vectorPool.allocate();
+
+v1.x = 10;
+v1.y = 5;
+
+v2.x = -3;
+v2.y = -6;
+
+addVector(v1, v2, v3);
+
+console.log([v3.x, v3.y]);
+
+vectorPool.free(v1);
+vectorPool.free(v2);
+vectorPool.free(v3);
+
+// 如果对象有属性引用了其他对象
+// 则这里也需要把这些属性设置伪null
+v1 = null;
+v2 = null;
+v3 = null;
+```
+##### 注意
+- 静态分配是优化的一种极端形式
 
 [01]: ./img/1-DOM.png "1-DOM"
 [02]: ./img/2-symbol.png "2-symbol"
@@ -638,3 +785,5 @@ with(location) {
 [09]: ./img/9-split.png "9-split"
 [10]: ./img/10-toPrimitive.png "10-toPrimitive"
 [11]: ./img/11-toString.png "11-toString"
+[12]: ./img/12-heap.png "12-heap"
+[13]: ./img/13-marksweep.jpg "13-marksweep"
