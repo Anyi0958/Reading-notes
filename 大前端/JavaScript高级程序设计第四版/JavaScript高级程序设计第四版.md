@@ -587,6 +587,7 @@ console.log(bar[Symbol.toStringTag]);   // bar
 - Object也是派生其他类的基类，Object类所有属性和方法在派生的对象上同样存在
 
 ### 每个Object类的属性和方法
+
 1. constructor
 2. hasOwnProperty(propertyName)：判断当前对象实例是否存在给定属性
 3. isPrototypeof(object)：判断当前对象是否为另一个对象的原型
@@ -774,6 +775,277 @@ v3 = null;
 ##### 注意
 - 静态分配是优化的一种极端形式
 
+# 5.引用类型
+引用值（或对象）是某个特定引用类型的实例。
+- 引用对象虽然有点像类，但跟类不是一个概念
+```js
+let someDate = new Date(Date.parse("May 23, 2019"));
+console.log(someDate);
+console.log(Date.now());
+```
+![14-datetime][14]
+
+## 正则捕获组
+```js
+let text = "This has been a short summer.";
+let pattern = /(..)or(.)/g;
+
+if(pattern.test(text)){
+    console.log(RegExp.$1); // sh
+    console.log(RegExp.$2); // t
+}
+```
+
+## 字符串迭代与解构
+- 字符串原型上暴露了一个`@@iterator`方法，表示可以迭代字符串的每个字符
+```js
+let message = "abc";
+let stringIterator = message[Symbol.iterator];
+
+console.log(stringIterator.next()); // {value: "a", done: false}
+console.log(stringIterator.next()); // {value: "b", done: false}
+console.log(stringIterator.next()); // {value: "c", done: false}
+console.log(stringIterator.next()); // {value: undefined, done: true}
+
+for (const c of "abcde"){
+    console.log(c);
+}
+
+console.log([...message]);
+```
+## URL编码方法
+- `encodeURI()`：对整个URI进行编码，`www.xxx.com/adawd.js`
+- `encodeURIComponent()`：编码URI中单独的组件，``adawd.js`
+- `decodeURI()`,`decodeURIComponent()`
+
+### 区别
+- `encodeURI`不会编码属于URL组件的特殊字符，比如冒号、斜杠、问号或者井号
+- `encodeURIComponent`会编码所有非标准字符
+```js
+let uri = "http://www.wrox.com/illegal value.js#start";
+
+console.log(encodeURI(uri));
+console.log(encodeURIComponent(uri));
+```
+![15-encode][15]
+
+### 注意
+不要在生产环境使用`escape()`和`unescape()`
+
+## eval()方法
+- 一个完整的ECMAScript解释器，接收一个参数，即一个要执行的ECMAScript(JavaScript)字符串
+- 可以看作`eval`转换为正常语句
+```js
+eval("console.log('hi')");
+
+// equal above
+console.log("hi");
+```
+- `eval()`执行的代码属于该调用所在的上下文，有相同的作用域链
+- 变量也可在`eval`中被引用
+```js
+let msg = "hello world!";
+eval("console.log(msg)");
+```
+- `eval`可在内部定义函数
+```js
+eval("function sayHi() { console.log('hi'); }");
+sayHi();
+```
+- 内部声明报错。通过`eval`定义的任何变量和函数都不会被提升，只有在`eval`执行时才会被创建
+- 会报错
+```js
+eval("let msg = 'hello worlds';");
+console.log(msg);	// Reference Error: msg is not defined
+```
+- <p style="color:red;">严格模式下，`eval`内部创建的变量和函数无法被外部访问</p>
+- 严格模式下，赋值给`eval`会报错
+```js
+"use strict"
+eval = "hi";
+```
+
+# 6. 集合引用类型
+- 对象
+- 数组与定型数组
+- Map, WeakMap, Set, WeakSet
+
+## Object
+- Object很适合存储和在应用程序间交换数据
+对象字面量(Object literal)：
+```js
+let person = {
+    name: "Nicholas",
+    age: 29
+};
+```
+## Array
+### 创建数组的办法
+```js
+// 创建array
+// 1.new
+let colors1 = new Array();
+
+// 2.create value
+let colors2 = new Array(20);
+let colors3 = new Array("red", "blue");
+
+// 3. decline new
+let colors4 = Array(3);
+
+// 4. array literal
+let colors5 = ["red", "blue", "green"];
+```
+
+### 创建数组的静态方法-from, of
+- from()：用于将类数组结构转换为数组实例
+- of()：将一组参数转换为数组实例
+```js
+console.log(Array.from("Matt"));    //["M", "a", "t", "t"]
+// 可以使用from将集合和映射转换为一个数组
+const m = new Map() .set(1, 2)
+                    .set(3, 4);
+const s = new Set() .add(1)
+                    .add(2)
+                    .add(3)
+                    .add(4);
+console.log(Array.from(m));
+console.log(Array.from(s));
+```
+![16-array][16]
+
+## 迭代器方法
+- Array的原型上暴露了3个用于检索数组内容的方法：keys(), values(), entries()
+- keys()：返回数组索引的迭代器
+- values()：返回数组元素的迭代器
+- entries()：返回索引/值对的迭代器
+```js
+const a = ["foo", "bar", "baz", "qux"];
+
+// 这些方法都返回迭代器
+// 可以将他们的内容通过Array.from()直接转换成数组实例
+const aKeys = Array.from(a.keys());
+const aValues = Array.from(a.values());
+const aEntries = Array.from(a.entries());
+
+console.log(aKeys);
+console.log(aValues);
+console.log(aEntries);
+
+// ES6解构，拆分键值
+const b = ["foo", "bar", "baz", "qux"];
+
+for (const [idx, element] of a.entries()){
+    console.log(`idx: ${idx}, element: ${element}`);    
+}
+
+```
+![17-iterator][17]
+
+## 栈方法
+LIFO，后进先出
+```js
+let colors = new Array();
+let count = colors.push("red", "green");
+
+console.log(count);
+
+count = colors.push("black");
+console.log(count);
+
+let item = colors.pop();
+console.log(item);
+console.log(colors.length);
+```
+## 迭代方法
+- `every()`:对数组每一项都运行传入的函数，如果对每一项函数都返回`true`，则这个方法返回`true`
+- `filter()`:对数组每一项都运行传入的函数，函数返回`true`的项会组成数组之后返回
+- `forEach()`:对数组每一项都运行传入的函数，没有返回值
+- `map()`:对数组每一项都运行传入的函数，返回由每次函数调用的结果构成的数组
+- `some()`:对数组每一项都运行传入的函数，如果由一项函数返回`true`，则这个方法返回`true`
+
+## ArrayBuffer
+- `Float32Array`是一种视图，允许js运行时访问一块名为`ArrayBuffer`的预分配内存
+- `ArrayBuffer`是所有定型数组及视图引用的基本单位
+- `SharedArrayBuffer`是一个变体，可以无需复制就在执行上下文间传递它
+- `ArrayBuffer()`是一个构造函数，用于在内存中分配特定数量的字节空间
+```js
+const buf = new ArrayBuffer(16);    // 在内存中分配16字节
+console.log(buf.byteLength);    // 16
+```
+- `ArrayBuffer`一经创建就不能再调整大小
+- 但可以使用`slice()`复制其全部或部分到一个新实例中：
+```js
+const buf1 = new ArrayBuffer(16);
+const buf2 = buf1.slice(4, 12);
+console.log(buf2.byteLength);   // 8
+```
+### `ArrayBuffer与malloc的区别`
+- 分配失败时会抛出错误
+- 最大尺寸不能超过`Number.MAX_SAFE_INTEGER(2^53 -1)`
+- 将所有二进制位初始化为0
+- 分配的堆内存可以被当成垃圾回收，不用手动释放
+
+## DataView
+- 专为文件I/O和网络I/O设计
+```js
+const buf = new ArrayBuffer(16);
+
+// DataView默认使用整个ArrayBuffer
+const fullDataView = new DataView(buf);
+console.log(fullDataView.byteOffset);   // 0
+console.log(fullDataView.byteLength);   // 16
+console.log(fullDataView.buffer == buf);    // true
+
+// 构造函数接收一个可选的字节偏移量和字节长度
+// byteOffset = 0 表示视图从缓冲起点开始
+// byteLLength = 8 限制视图为前8个字节
+const firstHalfDataView = new DataView(buf, 0, 8);
+console.log(firstHalfDataView.byteOffset);  // 0
+console.log(firstHalfDataView.byteLength);  // 8
+console.log(firstHalfDataView.buffer == buf);   // true
+
+// 如果不指定，则datavie会使用剩余的缓冲
+// byteOffset = 8表示视图从缓冲的第9个字节开始
+// byteLength 未指定,默认为剩余缓冲
+const secondHalfDataView = new DataView(buf, 8);
+console.log(secondHalfDataView.byteOffset); // 8
+console.log(secondHalfDataView.byteLength); // 8
+console.log(secondHalfDataView.buffer == buf);  // true
+```
+- 默认为大端字节序
+
+### 默认字节序
+- 又叫“网络字节序”，最高有效位保存在第一个字节，最低有效位保存在最后一个字节
+
+## 定型数组
+- 提供了适用面更广的API和更高的性能
+- 设计目的时提高与WebGL等原生库交换二进制数据的效率
+```js
+const ints = new Int16Array([1,2,3]);
+for(const int of ints) {
+    console.log(int);
+}
+```
+## Object和Map的选择
+- web开发任务来说，两者没有区别
+- 在乎内存和性能的话，对象和映射存在显著的差别
+### 差别
+1. 内存占用，`map`多存储50%
+2. 插入性能，`map`性能更佳
+3. 查找速度，`object`更好
+4. 删除性能，`map`更好
+
+## WeakMap
+- 弱映射，描述的是`javascript`垃圾回收程序对待`弱映射`中键的方式
+```js
+const m = new Map();
+const wm = new WeakMap();
+```
+
+
+***
+
 [01]: ./img/1-DOM.png "1-DOM"
 [02]: ./img/2-symbol.png "2-symbol"
 [03]: ./img/3-Symbol.isconcatSpreadable.png "3-Symbol.isconcatSpreadable"
@@ -787,3 +1059,7 @@ v3 = null;
 [11]: ./img/11-toString.png "11-toString"
 [12]: ./img/12-heap.png "12-heap"
 [13]: ./img/13-marksweep.jpg "13-marksweep"
+[14]: ./img/14-datetime.png "14-datetime"
+[15]: ./img/15-encode.png "15-encode"
+[16]: ./img/16-array.png "16-array"
+[17]: ./img/17-iterator.png "17-iterator"
