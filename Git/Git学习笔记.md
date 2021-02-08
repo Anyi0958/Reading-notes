@@ -4,6 +4,7 @@ Git2.3 目录
 # 推荐阅读
 
 - [廖雪峰博客](https://www.liaoxuefeng.com/wiki/896043488029600 "廖雪峰博客")
+- 《Git权威指南》
 
 # 前言-各个版本控制工具对比
 
@@ -229,7 +230,7 @@ Git2.3 目录
 团队分支脑图：
 ![team][20]
 
-## 3.4Bug分支
+## 3.4Bug分支`cherry-pick`
 修复bug，每个bug都可以通过一个新的临时分支来修复，修复后，合并分支，然后将临时分支删除.
 
 1. 假设场景A正在开发的软件
@@ -299,7 +300,23 @@ Git2.3 目录
 
 答：无解，找A吵一架，所以说共同开发时，合作很重要！
 
-## 3.7 Rebase
+## 3.7 Merge
+### 指令介绍
+`git merge branchA branchB`
+- `branchB`一般默认为当前`branch`，可以省略
+### 远程merge
+`git merge origin master`：将`origin`merge到`master`上
+`git merge origin/master`：将`origin`上的`master`分支`merge`到当前的`branch`上
+
+
+![rebase1.png][21]
+
+![rebase2.png][22]
+
+
+
+## 3.8 Rebase
+
 后push的开发者不得不先pull，本地合并，然后才能push成功。多次合并后，分支变得杂乱无章。
 
 - 查看本地和远程的版本对比：
@@ -326,10 +343,8 @@ $ git log --graph --pretty=oneline --abbrev-commit
 * d1be385 init hello
 ...
 ```
-rebase
-![rebase1.png][21]
 
-![rebase2.png][22]
+
 ```shell
 $ git log --graph --pretty=oneline --abbrev-commit
 * 7e61ed4 (HEAD -> master) add author
@@ -337,7 +352,20 @@ $ git log --graph --pretty=oneline --abbrev-commit
 * f005ed4 (origin/master) set exit=1
 * d1be385 init hello
 ```
-`git reabse`或者`git pull --rebase`
+### 使用方法
+变基前：
+![rebase-1][25]
+变基后：
+![rebase-2][26]
+以`master`分支为基，对`feature`分支进行变基
+- `git rebase master feature`：特性分支向前移植到`master`分支
+- 常用`git rebase`操作把本地开发分支移植到远端的`origin/分支`上
+- 即为“把你的补丁变基到xxx分支的头”
+- `rebase`最适合的是本地分支喝远端对应跟踪分支之间的合并：
+	- 除了自己开发之外，还有其他人往这个分支进行合入。
+	- 每次准备提交到远端之前，先变基，这个时候基分支就是远端的追踪分支
+	- `git rebase origin/feature feature`
+- 常用：`git reabse`或者`git pull --rebase`
 
 - 把分叉的提交历史“整理”成一条直线，看上去更直观。
 - 缺点是本地的分叉提交已经被修改过了。
@@ -345,6 +373,8 @@ $ git log --graph --pretty=oneline --abbrev-commit
 ### 总结
 - rebase操作可以把本地未push的分叉提交历史整理成直线；
 - rebase的目的是使得我们在查看历史提交的变化时更容易，因为分叉的提交需要三方对比。
+- `git rebase`本质是将当前基分支和当前分支的差异提交获取到，然后在“基分支”最新提交点后面讲差异逐个再次提交，最后将`HEAD`指向最新提交点
+
 
 ## 4. 标签管理
 标签就是版本库的快照，指向某个`commit id`的指针。
@@ -518,3 +548,5 @@ sudo EXTERNAL_URL="http://gitlab.example.com" yum -y install gitlab-ce
 [22]:./img/rebase2.png "rebase2.png"
 [23]:./img/git-cheatsheet1.png "git-cheatsheet1.png"
 [24]:./img/git-cheatsheet2.png "git-cheatsheet2.png"
+[25]: ./img/rebase-1.png "rebase-1"
+[26]: ./img/rebase-2.png "rebase-2"
