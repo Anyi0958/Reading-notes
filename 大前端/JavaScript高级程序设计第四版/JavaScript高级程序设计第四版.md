@@ -1037,11 +1037,207 @@ for(const int of ints) {
 4. 删除性能，`map`更好
 
 ## WeakMap
+
 - 弱映射，描述的是`javascript`垃圾回收程序对待`弱映射`中键的方式
 ```js
 const m = new Map();
 const wm = new WeakMap();
 ```
+### 使用弱映射
+- `weakMap`与`JavaScript`对象有着很大的不同
+#### 1. 私有变量
+- 弱映射造就了`Js`中实现真正私有变量的一种方式
+- 私有变量会存储在弱映射里，以对象实例为键，以私有成员的字典为值
+```js
+const wm = new WeakMap();
+
+class User {
+    constructor(id) {
+        this.idProperty = Symbol('id');
+        this.setId(id);
+    }
+
+    setPrivate(property, value) {
+        const privateMembers = wm.get(this) || {};
+        privateMembers[property] = value;
+        wm.set(this, privateMembers);
+    }
+
+    getPrivate(property){
+        return wm.get(this)[property];
+    }
+
+    setId(id) {
+        this.setPrivate(this.idProperty, id);
+    }
+
+    getId() {
+        return this.getPrivate(this.idProperty);
+    }
+}
+
+const user = new User(123);
+console.log(user.getId());  // 123
+user.setId(456);
+console.log(user.getId());  // 456
+
+// 并非是真正私有的
+console.log(wm.get(user)[user.idProperty]); // 456
+```
+##### 注意
+- 外部代码只需要拿到对象实例的引用和弱映射，就可以取得“私有”变量
+- 避免这种情况，需要闭包把`weakMap`包装起来，把弱映射和外界完全隔离开来
+```js
+const User = (() => {
+    const wm = new WeakMap();
+
+    class User {
+        constructor(id) {
+            this.idProperty = Symbol('id');
+            this.setId(id);
+        }
+
+        setPrivate(property, value) {
+            const privateMembers = wm.get(this) || {};
+            privateMembers[property] = value;
+            wm.set(this, privateMembers);
+        }
+
+        getPrivate(property) {
+            return wm.get(this)[property];
+        }
+
+        setId(id) {
+            this.setPrivate(this.idProperty, id);
+        }
+
+        getId() {
+            return this.getPrivate(this.idProperty);
+        }
+    }
+
+    return User;
+}) ();
+
+const user = new User(123);
+console.log(user.getId());  // 123
+user.setId(456);
+console.log(user.getId());  // 456
+```
+- 拿不到弱映射中的键，也无法取得弱映射中对应的值
+- 但是陷入了ES6之前的闭包私有变量模式
+
+#### 2. DOM节点元数据
+- 因为`weakMap`实例不会妨碍垃圾回收，非常适合保存关联元数据
+
+常规`Map`：
+```js
+const m = new Map();
+
+const loginButton = document.querySelector('#login');
+
+// 给这个结点关联一些元数据
+m.set(loginButton, {disabled: true});
+```
+- 假设以上代码执行，页面被JS改变了，原来的登录按钮从`DOM`树中被删掉了
+- 但由于映射中还保存着按钮的引用，所以对应的`DOM`节点仍然会逗留在内存中
+- 除非明确将其从映射中删除或者等到映射本身被销毁
+
+如果使用弱映射，当节点从`DOM`树中被删除后，垃圾回收程序可以立即释放内存，前提是没有其他地方引用这个对象：
+```js
+const wm = new WeakMap();
+wm.set(loginButton, {disabled: true});
+```
+
+## Set
+一种集合类型，集合数据结构。
+- 类似于加强的`Map`，大多数的API和行为都是共有的
+
+### 基本API
+`const m = new Set()`创建一个空集合
+创建的同时初始化实例，传入一个可迭代对象：
+```js
+const s1 = new Set(["val1", "val2", "val3"]);
+
+console.log(s1.size);   // 3
+
+// 使用自定义迭代器初始化集合
+const s2 = new Set({
+    [Symbol.iterator]: function* () {
+        yield "val1";
+        yield "val2";
+        yield "val3";        
+    }
+});
+
+console.log(s2.size);   // 3
+```
+- 初始化之后，可以使用：
+	- add(): 增加值
+	- has(): 查询
+	- size: 获取元素数量
+	- delete(): 删除元素
+	- clear(): 清空元素
+`add()`可以将多个操作连缀起来：
+```js
+const s = new Set() .add("val1");
+
+s.add("val2")
+ .add("val3");
+
+console.log(s.size);   // 3
+```
+与`Map`相似，Set可以包含任何数据类型，同时使用了`SameValueZero`操作，相当于使用严格对象相等的标准来检查值的匹配：
+```js
+const s = new Set();
+
+const functionVal = function() {};
+const symbolVal = Symbol();
+const objectVal = new Object();
+
+s.add(functionVal)
+ .add(symbolVal)
+ .add(objectVal);
+
+console.log(s.has(functionVal) 
+            && s.has(symbolVal) 
+            && s.has(objectVal));    //true
+
+// SameValueZero检查
+console.log(s.has(function() {}));  // false
+```
+
+### 顺序与迭代
+`Set`会维护值插入时的顺序，支持顺序迭代
+- 集合实例可以提供一个迭代器，能以插入顺序生成集合内容
+- `values()`，`keys()`，`Symbol.iterator`
+```js
+const s = new Set(["val1", "val2", "val3"]);
+
+console.log(s.values === s[Symbol.iterator]);   // true
+console.log(s.keys === s[Symbol.iterator]);
+
+for (let value of s.values()) {
+    console.log(value);
+}
+
+for (let value of s[Symbol.iterator]()) {
+    console.log(value);
+}
+
+for (let value of s.keys()) {
+    console.log(value);
+}
+```
+- `values()`是默认迭代器，可以直接对集合实例使用扩展操作，把集合转换为数组：
+```js
+const s = new Set(["val1", "val2", "val3"]);
+console.log([...s]);
+```
+
+## WeakSet
+`WeakSet`是`Set`的兄弟类型，`weak`指的是垃圾回收程序对待“弱集合”中值的方式
+`const ws = new WeakSet()`：实例化一个空的`WeakSet`
 
 
 ***
