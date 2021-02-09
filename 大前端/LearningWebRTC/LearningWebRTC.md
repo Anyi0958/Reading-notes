@@ -268,3 +268,222 @@ navigator.getUserMedia(constraints, stream => {
 });
 ```
 - 限制配置，决定着webRTC应用的性能
+
+### 多设备处理
+- 设备上接驳多台摄像头和麦克风
+- 暴露了`MediaSourceTrack`的API
+- `MediaStreamTrack.getSources`已经弃用，现在用`navigator.mediaDevices.enumerateDevices().then(function(sources))`
+```js
+navigator.mediaDevices.enumerateDevices().then(sources => {
+    let audioSource = null;
+    let videoSource = null;
+
+    for(let i = 0; i < sources.length; ++i){
+        let source = sources[i];
+        if(source.kind === 'audio'){
+            console.log("发现麦克风:", source.label, source.id);
+            audioSource = source.id;
+        } else if(source.kind === "video"){
+            console.log("发现摄像头:", source.label, source.id);
+            videoSource = source.id;
+        } else {
+            console.log("发现未知资源:", source);
+        }
+    }
+
+    let constraints = {
+        audio: {
+            optional: [{sourceId: audioSource}]
+        },
+        video: {
+            optional: [{sourceId: videoSource}]
+        }
+    };
+
+    navigator.getUserMedia(constraints, stream => {
+        let video = document.querySelector('video');
+        try{
+            video.src = window.URL.createObjectURL(stream);
+        }catch(error){
+            video.srcObject = stream;
+        }
+    },
+        error => console.log(`出现错误${error}`)
+    );
+});
+```
+
+##  创建一个拍照
+- canvas可以绘制线条、图形和图片，可以制作游戏
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning WebRTC - Chapter 2: Get User Media</title>
+    <style>
+
+        video, canvas{
+            border: 1px solid gray;
+            width: 480px;
+            height: 320px;
+        }
+    </style>
+</head>
+<body>
+    <video autoplay></video>    
+    <canvas></canvas>
+    <button id="capture">Capture</button>
+    <script src="photobooth.js"></script>
+</body>
+</html>
+```
+
+```js
+function hasUserMedia() {
+    return !!(navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia);
+}
+
+if(hasUserMedia()){
+    navigator.getUserMedia = navigator.getUserMedia
+                        || navigator.webkitGetUserMedia
+                        || navigator.mozGetUserMedia
+                        || navigator.msContentScript;
+    
+    let video = document.querySelector('video');
+    let canvas = document.querySelector('canvas');
+    let streaming = false;
+
+    navigator.getUserMedia({
+        video: true,
+        audio: false
+    }, stream => {
+        streaming = true;
+        try{
+            video.src = window.URL.createObjectURL(stream);
+        }catch(error){
+            video.srcObject = stream;
+        }
+    }, err => console.log(err)
+    );
+
+    document.querySelector('#capture').addEventListener('click',
+        event => {
+            if(streaming){
+                canvas.width = video.clientWidth;
+                canvas.height = video.clientHeight;
+                
+                let context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0);
+            }
+        }
+    );
+} else {
+    alert("对不起，您的浏览器不支持");
+}
+```
+
+## 修改媒体流
+- 图片滤镜
+添加css样式
+```css
+        .grayscale {
+            -webkit-filter: grayscale(1);
+            -moz-filter: grayscale(1);
+            -ms-filter: grayscale(1);
+            -o-filter: grayscale(1);
+            filter: grayscale(1);
+        }
+
+        .sepia {
+            -webkit-filter: sepia(1);
+            -moz-filter: sepia(1);
+            -ms-filter: sepia(1);
+            -o-filter: sepia(1);
+            filter: sepia(1);    
+        }
+
+        .invert {
+            -webkit-filter: invert(1);
+            -moz-filter: invert(1);
+            -ms-filter: invert(1);
+            -o-filter: invert(1);
+            filter: invert(1);
+        }
+```
+js增加滤镜功能：
+```js
+function hasUserMedia() {
+    return !!(navigator.getUserMedia ||
+            navigator.webkitGetUserMedia ||
+            navigator.mozGetUserMedia ||
+            navigator.msGetUserMedia);
+}
+
+if(hasUserMedia()){
+    navigator.getUserMedia = navigator.getUserMedia
+                        || navigator.webkitGetUserMedia
+                        || navigator.mozGetUserMedia
+                        || navigator.msContentScript;
+    
+    let video = document.querySelector('video');
+    let canvas = document.querySelector('canvas');
+    let streaming = false;
+
+    navigator.getUserMedia({
+        video: true,
+        audio: false
+    }, stream => {
+        streaming = true;
+        try{
+            video.src = window.URL.createObjectURL(stream);
+        }catch(error){
+            video.srcObject = stream;
+        }
+    }, err => console.log(err)
+    );
+
+    document.querySelector('#capture').addEventListener('click',
+        event => {
+            if(streaming){
+                canvas.width = video.clientWidth;
+                canvas.height = video.clientHeight;
+                
+                let context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0);
+            }
+        }
+    );
+
+    let filters = ['', 'grayscale', 'sepia', 'invert'];
+    let currentFilter = 0;
+
+    document.querySelector('video').addEventListener('click', 
+        event => {
+            if(streaming){
+                canvas.width = video.clientWidth;
+                canvas.height = video.clientHeight;
+                let context = canvas.getContext('2d');
+
+                context.drawImage(video, 0, 0);
+                currentFilter++;
+                if(currentFilter > filters.length - 1)  currentFilter = 0;
+                canvas.className = filters[currentFilter];
+            }
+        }
+    );
+} else {
+    alert("对不起，您的浏览器不支持");
+}
+```
+- 图片添加文字
+```js
+                context.fillStyle = "white";
+                context.fillText("Hello World!", 10, 10);
+```
+

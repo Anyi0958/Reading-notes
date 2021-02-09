@@ -18,10 +18,6 @@ class UserMedia {
                     mandatory: {
                         minAspectRatio: 1.777,
                         maxAspectRatio: 1.778
-                    },
-                    optional: {
-                        { maxWidth: 640 },
-                        { maxHeight: 480 }
                     }
                 },
                 audio: false
