@@ -1239,6 +1239,83 @@ console.log([...s]);
 `WeakSet`是`Set`的兄弟类型，`weak`指的是垃圾回收程序对待“弱集合”中值的方式
 `const ws = new WeakSet()`：实例化一个空的`WeakSet`
 
+***
+# 7. 迭代器和生成器
+本章内容：
+1. 理解迭代
+2. 迭代器模式
+3. 生成器
+- 迭代(Iteration)源自拉丁文`itero`
+- 迭代：按照顺序反复多次执行一段程序，通常会有明确的终止条件
+- 新特性：迭代器和生成器，能够更清晰、高效、方便地实现迭代
+
+## 理解迭代
+计数循环就是最简单的迭代：
+```js
+for(let i = 0; i <= 10; ++i){
+    console.log(i);
+}
+```
+- 循环是迭代机制的基础
+- 循环执行例程不是好选择：
+	- 迭代之前需要事先知道如何使用数据结构
+	- 遍历顺序并不是数据结构固有的
+- 新增`Array.prototype.forEach()`，通用迭代，但没有标识迭代何时终止。
+
+## 迭代器模式
+- 可以把有些结构称为可迭代对象(iterable)
+- 可迭代对象：数组或集合
+	- 元素有限
+	- 具有无歧义的遍历顺序
+- 临时性可迭代对象可以实现为生成器
+- 迭代器无需了解可迭代对象的结构，只需要知道如何取得连续的值
+
+## 可迭代协议
+- 支持迭代的自我识别能力
+- 创建实现Iterator接口的对象的能力
+- 默认迭代器属性(以`Symbol.iterator`)引用一个迭代器工厂，调用这个工厂返回一个新迭代器
+### 检查是否存在默认迭代器属性可以暴露这个工厂
+```js
+let num = 1;
+let obj = {};
+
+// 这两种类型没有实现迭代器工厂函数
+console.log(num[Symbol.iterator]);  // undefined
+console.log(obj[Symbol.iterator]);  // undefined
+
+let str = 'abc';
+let arr = ['a', 'b', 'c'];
+let map = new Map() .set('a', 1).set('b', 2).set('c', 3);
+let set = new Set() .add('a') .add('b') .add('c');
+let els = document.querySelectorAll('div');
+
+// 这些类型都实现了迭代器工厂函数
+console.log(str[Symbol.iterator]);  // f values() { [native code] }
+console.log(arr[Symbol.iterator]);  // f values() { [native code] }
+console.log(map[Symbol.iterator]);  // f values() { [native code] }
+console.log(set[Symbol.iterator]);  // f values() { [native code] }
+console.log(els[Symbol.iterator]);  // f values() { [native code] }
+
+// 调用这个工厂函数会生成一个迭代器
+console.log(str[Symbol.iterator] () );  // StringIterator {}
+console.log(arr[Symbol.iterator] () );  // ArrayIterator {}
+console.log(map[Symbol.iterator] () );  // MapIterator {}
+console.log(set[Symbol.iterator] () );  // SetIterator {}
+console.log(els[Symbol.iterator] () );  // ArrayIterator {}
+```
+- 实际写代码的过程中，不需要显式调用这个工厂函数来生成迭代器
+- 自动兼容接收的语言特性：
+	1. `for-of`
+	2. 数组解构
+	3. 扩展操作符
+	4. `Array.from()`
+	5. 创建集合
+	6. 创建映射
+	7. `Promise.all()`接收由期约组成的可迭代对象
+	8. `Promise.race()`接收由期约组成的可迭代对象
+	9. `yield*`操作符，在生成器中使用
+
+
 
 ***
 
