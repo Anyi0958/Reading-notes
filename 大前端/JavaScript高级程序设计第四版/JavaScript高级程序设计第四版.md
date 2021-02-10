@@ -871,6 +871,7 @@ eval = "hi";
 - Map, WeakMap, Set, WeakSet
 
 ## Object
+- `let person = {}`与`new Object()`相同
 - Object很适合存储和在应用程序间交换数据
 对象字面量(Object literal)：
 ```js
@@ -1027,7 +1028,35 @@ for(const int of ints) {
     console.log(int);
 }
 ```
+## Map
+
+### 基本API
+
+- 创建：`const m = new Map();`
+- 初始化值：`const m1 = new Map(["key1", "val1"]);`
+- 查看是否存在键值对：`m.has(key);`
+- 获取键对应值：`m.get(key);`
+- 新增设置：`m.set('key2', 'val2');`
+- 迭代：
+	- 获取k-v：`entries()`，`[Symbol.iterator]`
+		- `for(let i of m.entries())`
+		- `for(let i of m[Symbol.iterator])`
+	- `m.forEach((key,val) => console(${key}->${val}))`
+	- 获取keys：`for(let key of m.keys())`
+	- 获取val：`for(let val of m.values())`
+sample:
+```js
+const m1 = new Map([
+	["key1", "val1"]
+]);
+
+for(let i of m1.keys()){
+	console.log(m1.get(i));	// val1
+}
+```
+
 ## Object和Map的选择
+
 - web开发任务来说，两者没有区别
 - 在乎内存和性能的话，对象和映射存在显著的差别
 ### 差别
