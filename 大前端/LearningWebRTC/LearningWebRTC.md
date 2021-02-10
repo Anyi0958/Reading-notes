@@ -487,3 +487,64 @@ if(hasUserMedia()){
                 context.fillText("Hello World!", 10, 10);
 ```
 
+# 3. 创建简单的WebRTC应用
+- 开发任何WebRTC应用的首个步骤就是创建`RTCPeerConnection`
+- 成功创建一个`RTCPeerConnection`的前提，就是需要理解浏览器创建对等连接的内部工作原理
+## 本章内容
+1. 理解`UDP`传输协议和实时传输
+2. 在本地与其他用户发送信令和交涉
+3. 在Web上找到其他用户和NAT穿透
+4. 创建`RTCPeerConnection`
+
+## 理解`UDP`传输协议和实时传输
+实时传输要求双方间有快速的连接速度。
+- 典型的网络连接：需要将音频和视频放到同一帧中，并以40-60帧的速度发送给另一个用户
+- 因为允许数据丢失，人脑会对丢失的帧自动补成，所以UDP更适合，创建高性能应用
+- TCP不适合游戏中的流数据，游戏不需要可靠，只需要快
+UDP传输不保证的事情：
+1. 不保证数据发送或接收的先后顺序
+2. 不保证每一个数据包都能够传送到接收端
+3. 不跟踪每个数据包的状态
+
+## WebRTC API
+主要技术：
+1. RTCPeerConnection对象
+2. 信号传递和交涉
+3. 会话描述协议-SDP
+4. 交互式连接建立-ICE
+
+## RTCPeerConnection对象
+`API`的主入口
+- 初始化一个连接他人以及传送流媒体信息
+- 负责与另一个用户建立UDP连接
+- 功能：
+	- 维护浏览器内会话和对等连接的状态
+	- 对等连接建立
+
+![1-RTCPeerConnection][01]
+
+实例化对象：
+```js
+let myConnection = new RTCPeerConnection(configuration);
+myConnection.onaddstream = stream => console.log(stream);
+```
+
+## 信号传递和交涉
+网络地址：`IP`地址和端口号组成
+发送信令的过程：
+1. 对等连接创建潜在的候选列表
+2. 选择用户连接
+3. 信令层通知用户连接，是否接受或拒绝
+4. 连接接收后的通知
+5. 交换电脑硬件和软件信息
+6. 交换位置信息
+7. 连接成功或失败
+
+## 会话描述协议-SDP
+用户需要传出信息指明视频解码器，何种网络。
+SDP是基于字符串的二进制数据对象：
+`<key>=<value>\n`
+
+***
+[01]: ./img/1-RTCPeerConnection.png "1-RTCPeerConnection"
+
