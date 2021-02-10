@@ -544,7 +544,32 @@ myConnection.onaddstream = stream => console.log(stream);
 用户需要传出信息指明视频解码器，何种网络。
 SDP是基于字符串的二进制数据对象：
 `<key>=<value>\n`
+sample:
+```js
+let myConnection = new RTCPeerConnection();
+myConnection.ontrack = function(stream) {
+    console.log(stream);
+};
+```
+## 清晰的路线到用户
+使用的多种技术：
+- NAT会话穿透技术 - STUN
+- 中继技术穿透NAT - TURN
+- 交互式连接建立 - ICE
+
+典型的`WebRTC`连接过程的架构：
+![2-WebRTCframework][02]
+
+## STUN
+使用STUN协议需要由一个支持STUN协议的服务器
+- 建立高质量的WebRTC应用实际上需要多个服务器，需要提供一套STUN和TURN服务器
+
+## TURN
+- 客户端在对等连接的双方之间增加一个转播
+
+## WebRTC应用
+
 
 ***
 [01]: ./img/1-RTCPeerConnection.png "1-RTCPeerConnection"
-
+[02]: ./img/2-WebRTCframework.png "2-WebRTCframework"

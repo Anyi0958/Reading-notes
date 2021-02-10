@@ -1,2 +1,4 @@
 let myConnection = new RTCPeerConnection();
-myConnection.onaddstream = stream => console.log(stream);
+myConnection.addtrack = function(stream) {
+    console.log(stream);
+};
