@@ -1372,7 +1372,10 @@ console.log(els[Symbol.iterator] () );  // ArrayIterator {}
 	8. `Promise.race()`接收由期约组成的可迭代对象
 	9. `yield*`操作符，在生成器中使用
 
-
+## 迭代器协议
+- 迭代器是一种一次性使用的对象，用于迭代与其关联的可迭代对象
+- 迭代器API使用`next()`方法在可迭代对象中遍历数据，每次成功调用，都会返回`IteratorResult`对象，其中包含迭代器返回的下一个值
+- 
 
 ***
 
