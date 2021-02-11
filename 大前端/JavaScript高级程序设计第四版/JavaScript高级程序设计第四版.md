@@ -1072,7 +1072,16 @@ for(let i of m1.keys()){
 const m = new Map();
 const wm = new WeakMap();
 ```
+### 基本API
+- 创建：`const wm = new WeakMap();`
+- 初始化值：`const key1 = {id:1};const wm = new WeakMap([[key1, "val1"], [key2, "val2"]]);`
+- 查看是否存在：`wm.has(key1)`
+- 获取相应的键值：`wm.get(key1)`
+- 新增：`wm.set(key1, "val1")`
+- 不可迭代
+
 ### 使用弱映射
+
 - `weakMap`与`JavaScript`对象有着很大的不同
 #### 1. 私有变量
 - 弱映射造就了`Js`中实现真正私有变量的一种方式
@@ -1183,8 +1192,21 @@ wm.set(loginButton, {disabled: true});
 - 类似于加强的`Map`，大多数的API和行为都是共有的
 
 ### 基本API
-`const m = new Set()`创建一个空集合
+- 创建：`const m = new Set()`
+- 初始化值：`const m = new Set(["val1", "val2"]);`
+- 查看是否存在：`m.has("val1")`
+- 没有获取
+- 新增：`m.add("val3")`
+- `m.add({a:'1'})`会输出`{a:'1'}`，如果是指定的`xx.a`，就会输出`1`
+- `set`可以作为函数的参数进行传递`function(m = new Set())`
+- 迭代：
+	- 获取k-v：`entries()`，值会出现两次`["val1", "val1"]` 
+	- 获取`value`：
+	- `for(let i of m.values())`
+	- `for(let i of m[Symbol.iterator]())`
+
 创建的同时初始化实例，传入一个可迭代对象：
+
 ```js
 const s1 = new Set(["val1", "val2", "val3"]);
 
@@ -1267,7 +1289,13 @@ console.log([...s]);
 ## WeakSet
 `WeakSet`是`Set`的兄弟类型，`weak`指的是垃圾回收程序对待“弱集合”中值的方式
 `const ws = new WeakSet()`：实例化一个空的`WeakSet`
-
+### 基本API
+- 创建：`const ws = new WeakSet()`
+- 初始化值：`const val1 = {id:1};const ws = new WeakSet([val1])`
+- 查看是否拥有：`ws.has(val1)`
+- 新增：`ws.add(val1)`
+- 没有获取值的函数
+- 不可迭代
 ***
 # 7. 迭代器和生成器
 本章内容：
