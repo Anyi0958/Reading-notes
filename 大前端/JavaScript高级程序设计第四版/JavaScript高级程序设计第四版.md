@@ -1501,6 +1501,116 @@ for (let i of counter)  console.log(i);
 // 2
 // 3
 ```
+## 提前终止迭代器
+- 可选的`return()`方法用于指定在迭代器提前关闭时执行的逻辑
+可能的情况：
+	- `for-of`循环通过`break`,`continue`,`return`或`throw`提前退出
+	- 解构操作并未消费所有值
+- `return`方法必须返回一个有效的`IteratorResult`对象，可以只返回`{done: true}`
+- 内置语言结构在发现还有更多值可以迭代，但不会消费这些值时，会自动调用`return`方法
+```js
+class Counter {
+    constructor(limit){
+        this.limit = limit;
+    }
+
+    [Symbol.iterator]() {
+        let count = 1,
+            limit = this.limit;
+        return {
+            next() {
+                if(count <= limit){
+                    return {done: false, value: count++};
+                } else {
+                    return {done: true, value: undefined};
+                }
+            },
+
+            return() {
+                console.log('Exiting early.');
+                return {done: true};
+            }
+        };
+    }
+}
+
+let counter1 = new Counter(5);
+for(let i of counter1){
+    if(i > 2)
+        break;
+    console.log(i);
+}
+// 1
+// 2
+// Exiting early
+
+let counter2 = new Counter(5);
+
+try{
+    for(let i of counter2){
+        if(i > 2)
+            throw 'err';
+        console.log(i);
+    }
+}catch(err) {}
+// 1
+// 2
+// Exiting early
+
+let counter3 = new Counter(5);
+
+let [a, b] = counter3;
+// Exiting early
+```
+- 如果迭代器没有关闭，则继续从上次离开的地方继续迭代
+- 数组的迭代器就是不能关闭的
+```js
+let c = [1,2,3,4,5];
+let iter = c[Symbol.iterator]();
+
+for (let i of iter){
+    console.log(i);
+    if(i > 2)
+        break;
+}
+// 1
+// 2
+// 3
+for (let i of iter){
+    console.log(i);
+}
+// 4
+// 5
+```
+- 因为`return`方法是可选的，所以并非所有迭代器都是可关闭的
+- 测试这个迭代器实例的`return`属性是不是函数对象，可知是否可关闭
+- 有`return`并不能让迭代器变成可关闭的，不会强制进入关闭状态
+```js
+let d = [1,2,3,4,5];
+let iter = d[Symbol.iterator]();
+iter.return = () => {
+    console.log('Exiting early.');
+    return {done: true};
+};
+
+for(let i of iter){
+    console.log(i);
+    if(i > 2){
+        break;
+    }
+}
+// 1
+// 2
+// 3
+// Exiting early
+
+for(let i of iter){
+    console.log(i);
+}
+// 4
+// 5
+```
+## 生成器
 
 
 
