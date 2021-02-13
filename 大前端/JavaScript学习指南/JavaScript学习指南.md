@@ -1103,6 +1103,69 @@ parent.appendChild(p2);
 - stopPropagation
 - stopImmediatePropagation
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bubble Event Propagation</title>
+</head>
+<body>
+    <div>
+        <button>Click Me!</button>
+    </div>
+    <script src="bubble.js"></script>
+</body>
+</html>
+```
+
+```js
+// 创建一个事件处理器并返回这个处理器
+function logEvent(handlerName, type, cancel, stop, stopImmediate) {
+    // 这才是真正的事件处理器
+    return event => {
+        if(cancel)  event.preventDefault();
+        if(stop)    event.stopPropagation();
+        if(stopImmediate)   event.stopImmediatePropagation();
+
+        console.log(`${type}: ${handlerName}` + (event.defaultPrevented ? '(canceled)' : ''));
+    };
+}
+
+// 给元素上添加一个logger事件
+function addEventLogger(elt, type, action) {
+    const capture = type === 'capture';
+    elt.addEventListener('click',
+        logEvent(elt.tagName, type, action === 'cancel',
+        action === 'stop', 
+        action === 'stop!'),
+        capture
+    );
+}
+
+const body = document.querySelector('body');
+const div = document.querySelector('div');
+const button = document.querySelector('button');
+
+addEventLogger(body, 'capture');
+addEventLogger(body, 'bubble');
+addEventLogger(div, 'capture');
+addEventLogger(div, 'bubble');
+addEventLogger(button, 'capture');
+addEventLogger(button, 'bubble');
+
+```
+
+效果：
+
+![5-eventPrevent][06]
+
+
+
+
+
 #### 事件的传播-重要性
 - 提前知道事件的传播并控制它
 - **掌握事件传播机制是区分高级程序员和一般开发的区别**
@@ -1642,3 +1705,4 @@ const server = http.createServer((req, res) => {
 [04]: ./img/newTypeText.png "TypeText"
 [05]: ./img/nodeModules.jpg "nodeModules"
 
+[06]: ./img/5-eventPrevent.png "5-eventPrevent"
