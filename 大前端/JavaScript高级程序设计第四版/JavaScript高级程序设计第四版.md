@@ -1373,9 +1373,136 @@ console.log(els[Symbol.iterator] () );  // ArrayIterator {}
 	9. `yield*`操作符，在生成器中使用
 
 ## 迭代器协议
+定义：
 - 迭代器是一种一次性使用的对象，用于迭代与其关联的可迭代对象
 - 迭代器API使用`next()`方法在可迭代对象中遍历数据，每次成功调用，都会返回`IteratorResult`对象，其中包含迭代器返回的下一个值
-- 
+- 如果不调用`next()`，则无法知道迭代器的当前位置
+- `IteratorResult`包含两个属性：`done`和`value`
+- `done`是一个布尔值，表示是否可以再次调用`next`取得下一个值
+- `value`包含下一个值
+
+sample:
+```js
+// 可迭代对象
+let arr = ['foo', 'bar'];
+
+// 迭代器工厂函数
+console.log(arr[Symbol.iterator]);  // f values() { [native code] }
+
+// 迭代器
+let iter = arr[Symbol.iterator]();
+console.log(iter);  // ArrayIterator {}
+
+// 执行迭代
+console.log(iter.next());   // {done: false, value: 'foo'}
+console.log(iter.next());   // {done: false, value: 'bar'}
+console.log(iter.next());   // {done: true, value: undefined }
+```
+特点：
+- 每个迭代器都表示对可迭代对象的一次性有序遍历
+- 不同迭代器实例相互之间没有联系，会独立运行
+- 可迭代对象改变，迭代器也变化
+- 迭代器维护者一个指向可选迭代对象的引用，会阻止垃圾回收程序回收可迭代对象
+- 迭代器可以是通用的迭代，也可以是接口，也可是迭代器类型
+```js
+// 这个类实现了可迭代接口(Iterable)
+// 调用默认的迭代器工厂函数会返回
+// 一个实现迭代器接口(Iterator)的迭代器对象
+class Foo {
+    [Symbol.iterator](){
+        return {
+            next(){
+                return { done: false, value: 'foo' };
+            }
+        };
+    }
+}
+
+let f = new Foo();
+
+// 打印出实现了迭代器接口的对象
+console.log(f[Symbol.iterator]());  // {next: f() {}}
+
+// Array类型实现了可迭代接口(Iterable)
+// 调用Array类型的默认迭代器工厂函数
+// 会创建一个ArrayIterator的实例
+let a = new Array();
+
+// 打印出ArrayIterator的实例
+console.log(a[Symbol.iterator]());  // Array Iterator {}
+```
+## 自定义迭代器
+- 任何实现`Iterator`接口的对象都可以作为迭代器使用
+```js
+class Counter {
+    // Counter的实例应该迭代limit次
+    constructor(limit){
+        this.count = 1;
+        this.limit = limit;
+    }
+
+    next() {
+        if(this.count <= this.limit){
+            return { done: false, value: this.count++ };
+        }else {
+            return { done: true, value: undefined};
+        }
+    }
+
+    [Symbol.iterator]() {
+        return this;
+    }
+}
+
+let counter = new Counter(3);
+for (let i of counter) {
+    console.log(i);
+}
+// 1
+// 2
+// 3
+
+for (let i of counter)  {console.log(i);} // nothing logged and printed
+```
+
+- 让一个可迭代对象能创建多个迭代器，必须每创建一个迭代器就对应一个新计数器
+- 计数器变量放到闭包里，通过闭包返回迭代器
+```js
+class Counter {
+    constructor(limit){
+        this.limit = limit;
+    }
+
+    [Symbol.iterator](){
+        let count = 1;
+        let limit = this.limit;
+
+        return {
+            next(){
+                if(count <= limit){
+                    return {done: false, value: count++};
+                }else{
+                    return {done: true, value: undefined};
+                }
+            }
+        };
+    }
+}
+
+let counter = new Counter(3);
+
+for (let i of counter)   console.log(i);
+// 1
+// 2
+// 3
+
+for (let i of counter)  console.log(i);
+// 1
+// 2
+// 3
+```
+
+
 
 ***
 
