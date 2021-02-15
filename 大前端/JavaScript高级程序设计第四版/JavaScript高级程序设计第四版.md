@@ -1645,8 +1645,192 @@ class Bar {
 - 调用生成器函数会产生一个生成器对象
 - 生成器对象一开始处于暂停执行(suspended)的状态
 - 与迭代器相似，生成器对象也实现了`Iterator`接口，因此具有`Next()`方法，这个方法可以让生成器开始或恢复执行
+```js
+function* generatorFn() {}
 
- 
+const g = generatorFn();
+
+console.log(g); // generatorFn {<suspended>}
+console.log(g.next);  // f next()   { [native code] }
+```
+- `next()`方法返回值类似于迭代器，有一个`done`和`value`属性
+- 函数体为空的生成器函数中间不会停留，调用一次`next()`就会让生成器到达`done: true`状态
+- 生成器函数只会在初次调用`next()`方法后开始执行
+```js
+function* generatorFn() {
+    console.log("foobar");
+}
+
+// 初次调用生成器函数并不会打印日志
+let generatorObject = generatorFn();
+
+generatorObject.next(); // foobar
+```
+- 生成器对象实现了`Iterable`接口，默认的迭代器是自引用的：
+```js
+function* generatorFn2() {}
+
+console.log(generatorFn2);  // f* generatorFn() {}
+console.log(generatorFn2()[Symbol.iterator]);   // f [Symbol.iterator]() [native code]
+console.log(generatorFn2());    // generatorFn2 {<suspended>}
+console.log(generatorFn2()[Symbol.iterator]()); // generatorFn2 {<suspended>}
+
+const g = generatorFn2();
+console.log(g === g[Symbol.iterator]());    // true
+```
+### 通过`yield`中断执行
+- `yield`关键字可以让生成器停止和开始执行，也是最有用的地方
+- 生成器函数在遇到`yield`关键字后，执行停止，函数作用域的状态会被保留
+- 停止后通过调用`next()`来恢复执行，返回的`{done: true|false, value: xx|undefined}`
+```js
+function* generatorFn() {
+    yield 'foo';
+    yield 'bar';
+    return 'baz';
+}
+
+let generatorObject = generatorFn();
+
+console.log(generatorObject.next());    // {done: false, value: 'foo'}
+console.log(generatorObject.next());    // {done: false, value: 'bar'}
+console.log(generatorObject.next());    // {done: true, value: 'baz'}
+```
+- 生成器函数内部的执行流程会针对每个生成器对象的区分作用域，也就是在一个生成器对象上调用`next()`不会影响其他生成器
+```js
+function* generatorFn() {
+    yield 'foo';
+    yield 'bar';
+    return 'baz';
+}
+
+let generatorObject1 = generatorFn(),
+	generatorObject2 = generatorFn();
+
+console.log(generatorObject1.next());    // {done: false, value: 'foo'}
+console.log(generatorObject2.next());    // {done: false, value: 'foo'}
+```
+- `yield`只能在生成器函数内部使用，用在其他地方会抛出错误
+- 如果有`return`，`yield`必须位于生成器函数定中，出现在嵌套的非生成器函数中会报错
+```js
+// valid
+function* validGeneratorFn() {
+    yield;
+}
+
+// invalid
+function* invalidGeneratorFnA() {
+    function a() {
+        yield;
+    }
+}
+
+// invalid
+function* invalidGeneratorFnB() {
+    const b = () => {
+        yield;
+    }
+}
+
+// invalid
+function* invalidGeneratorFnC() {
+    (() => {
+        yield;
+    })();
+}
+```
+#### 1. 生成器对象作为可迭代对象
+- 显示调用`next()`方法的用处不大
+- 生成器对象当成可迭代对象，使用将会很方便
+```js
+function* generatorFn() {
+    yield 1;
+    yield 2;
+    yield 3;
+}
+
+for (const x  of generatorFn()) {
+    console.log(x);
+}
+// 1
+// 2
+// 3
+```
+
+- 在需要自定义迭代对象时，如此使用生成器对象会特别有用
+- 比如，定义一个可迭代对象，它会产生一个迭代器，这个迭代器会执行指定的次数
+```js
+function* nTimes(n) {
+    while(n--){
+        yield;
+    }
+}
+
+for (let _ of nTimes(3)) {
+    console.log('foo');
+}
+// foo
+// foo
+// foo
+```
+#### 2. 使用`yield`实现输入和输出
+- `yield`关键字还可以作为函数的中间参数使用
+- 生成器函数暂停的`yield`关键字会接收到传给`next()`方法的第一个值
+- 第一次调用`next()`传入的值不会被使用，第一次调用是为了开始执行生成器函数
+```js
+function* generatorFn(initial) {
+    console.log(initial);
+    console.log(yield);
+    console.log(yield);
+}
+
+let generatorObject = generatorFn('foo');
+
+generatorObject.next('bar');    // foo
+generatorObject.next('baz');    // baz
+generatorObject.next('qux');    // qux
+```
+- `yield`可以同时用于输入和输出
+```js
+function* generatorFn(){
+	return yield 'foo';
+}
+let generatorObject = generatorFn();
+
+console.log(generatorObject.next());	// {done: false, value: 'foo'}
+console.log(generatorObject.next('bar'));	// {done: true, value: 'bar'}
+```
+- 如果有生成器函数，要迭代指定次数，并产生迭代的索引，用`for-of`
+```js
+function* nTimes(n) {
+    for(let i = 0; i < n; ++i)
+        yield i;
+}
+
+for(let x of nTimes(3)) console.log(x);
+// 0
+// 1
+// 2
+```
+- 可以使用生成器实现范围和填充数组
+```js
+function* range(start, end){
+    while(end > start)  yield start++;
+}
+
+for(let x of range(4,7)) console.log(x);
+// 4
+// 5
+// 6
+
+function* zeroes(n) {
+    while(n--)  yield 0;
+}
+
+console.log(Array.from(zeroes(3))); // [0, 0, 0]
+```
+#### 3. 产生可迭代对象
+
+
 
 ***
 
