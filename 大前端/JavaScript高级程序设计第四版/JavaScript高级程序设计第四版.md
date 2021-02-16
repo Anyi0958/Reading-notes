@@ -1307,6 +1307,7 @@ console.log([...s]);
 - 新特性：迭代器和生成器，能够更清晰、高效、方便地实现迭代
 
 ## 理解迭代
+
 计数循环就是最简单的迭代：
 ```js
 for(let i = 0; i <= 10; ++i){
@@ -1829,11 +1830,273 @@ function* zeroes(n) {
 console.log(Array.from(zeroes(3))); // [0, 0, 0]
 ```
 #### 3. 产生可迭代对象
+- 可以使用星号增强`yield`的行为，让它能够迭代一个可迭代对象，从而一次产出一个值
+```js
+// 等价的
+function* generatorFn1() {
+    for(const x of [1,2,3]) yield x;
+}
 
+function* generatorFn2() {
+    yield* [1,2,3];
+}
+
+let test1 = generatorFn2();
+
+for(const x of test1)   console.log(x);
+// 1
+// 2
+// 3
+```
+- `yield*`只是将一个可迭代对象序列化为一连串可以单独产出的值，所以跟把`yield`放到一个循环里没什么不同
+- 与放到循环里等价
+- `yield*`的值是关联迭代器返回`done: true`时的`value`属性，对于普通迭代器来说，这个值是`undefined`:
+```js
+function* generatorFn() {
+    console.log('iter value:', yield* [1,2,3]);
+}
+
+for(const x of generatorFn())   console.log('value:', x);
+// value: 1
+// value: 2
+// value: 3
+// iter value: undefined
+```
+- `yield*`的值对于生成器函数产生的迭代器来说，这个值就是生成器函数返回的值：
+```js
+function* innerGeneratorFn() {
+    yield 'foo';
+    return 'bar';
+}
+
+function* outerGeneratorFn() {
+    console.log('iter value:', yield* innerGeneratorFn() );
+}
+
+for (const x of outerGeneratorFn()) console.log('value:', x);
+// value: foo
+// iter value: bar
+```
+#### 4. 使用`yield*`实现递归算法
+- `yield*`最有用的地方是实现递归操作，生成器可以生成自身
+```js
+function* nTimes(n) {
+    if(n > 0){
+        yield* nTimes(n -1);
+        yield n - 1;
+    }
+}
+
+for(const x of nTimes(3))   console.log(x);
+// 0
+// 1
+// 2
+```
+- 讲解：从最顶层来看，这相当于创建一个可迭代对象并返回递增的整数
+- 使用**递归生成器结构**和`yield*`可以优雅地表达递归算法
+##### 图的实现
+- 图数据结构非常适合遍历，递归生成器用来测试某个图是否连通，常用于深度优先遍历
+用于生成一个随机的双向图：
+```js
+class Node {
+    constructor(id) {
+        this.id = id;
+        this.neighbors = new Set();
+    }
+
+    connect(node) {
+        if(node !== this){
+            this.neighbors.add(node);
+            node.neighbors.add(this);
+        }
+    }
+}
+
+class RandomGraph {
+    constructor(size) {
+        this.nodes = new Set();
+
+        // Create Nodes
+        for(let i = 0; i < size; ++ i)  this.nodes.add(new Node(i));
+
+        // random connect nodes
+        const threshold = 1 / size;
+        for(const x of this.nodes) {
+            for(const y of this.nodes){
+                if(Math.random() < threshold){
+                    x.connect(y);
+                }
+            }
+        }
+    }
+
+    // 这个方法用于调试
+    print() {
+        for(const node of this.nodes){
+            const ids = [...node.neighbors]
+                        .map(n => n.id)
+                        .join(',');
+        
+            console.log(`${node.id}: ${ids}`);
+        }
+    }
+
+    // 深度优先遍历
+    isConnected() {
+        const visitedNodes = new Set();
+
+        function* traverse(nodes) {
+            for(const node of nodes ) {
+                if(!visitedNodes.has(node)){
+                    yield node;
+                    yield* traverse(node.neighbors);
+                }
+            }
+        }
+
+        // 取得集合中的第一个结点
+        const firstNode = this.nodes[Symbol.iterator]().next().value;
+
+        // 使用递归生成器迭代每个结点
+        for (const node of traverse([firstNode])) {
+            visitedNodes.add(node);
+        }
+
+        return visitedNodes.size === this.nodes.size;
+    }
+}
+
+const g = new RandomGraph(6);
+
+g.print();
+
+console.log(g.isConnected());
+
+// 0: 2,5
+// 1: 5,4
+// 2: 0
+// 3: 5,4
+// 4: 1,3,5
+// 5: 1,3,0,4
+// true
+```
+### 生成器作为默认迭代器
+- 生成器对象实现了`Iterable`接口
+- 生成器函数和默认迭代器被调用后都产生迭代器
+生成器作为默认迭代器：
+```js
+class Foo {
+    constructor() {
+        this.values = [1,2,3];
+    }
+
+    * [Symbol.iterator]() {
+        yield* this.values;
+    }
+}
+
+const f = new Foo();
+for(const x of f)   console.log(x);
+// 1
+// 2
+// 3
+```
+#### 优势
+1. 可以一行产出类的内容
+2. `for-of`调用的默认迭代器恰好是改写的生成器函数，使用灵活方便
+
+### 提前终止生成器
+实现`Iterator`接口的对象：
+- 有`next()`方法
+- 强制生成器进入关闭状态：
+	- 有`return()`方法提前终止迭代器
+	- `throw()`抛出错误停止 
+```js
+function* generatorFn() {}
+
+const g = generatorFn();
+console.log(g);     // generatorFn {<suspended>}
+console.log(g.next); // f next() { [native code] }
+console.log(g.return);  // f return() {[native code]}
+console.log(g.throw);   // f throw() {[native code]}
+```
+#### return
+1. 提供给`return`方法的值，就是终止迭代器对象的值
+```js
+console.log(g.return(4));	//{ value: 4, done: true }
+```
+2. 生成器对象都有`return`，进入关闭状态就无法恢复，提供的任何返回值都不会被存储和传播，并返回`done: true`
+3. `for-of`循环等内置语言结构会忽略状态为`done: true`的`IteratorObject`内部返回的值
+```js
+function* generatorFn() {
+    yield* [1,2,3];
+}
+
+const g = generatorFn();
+
+for(const x of g){
+    if(x > 1)
+        g.return(3);
+    console.log(x);
+}
+// 1
+// 2
+```
+#### throw
+- 在暂停的时候，将一个提供的错误注入到生成器对象中
+	- 如果错误未处理，生成器就会关闭
+	- 如果生成器函数内部处理了这个错误，就不会关闭，还可以恢复执行
+	- 错误会跳过对应的`yield`
+```js
+function* generatorFn1() {
+    yield* [1,2,3];
+}
+
+const g1 = generatorFn1();
+
+console.log(g1);     // generatorFn {<suspended>}
+try{
+    g1.throw('foo');
+}catch(e){
+    console.log(e);     //foo
+}
+console.log(g1);     // generatorFn {<closed>}
+
+function* generatorFn2() {
+    for(const x of [1,2,3]) {
+        try{
+            yield x;
+         }catch(e) {}
+    }
+
+}
+
+const g2 = generatorFn2();
+console.log(g2.next());     // {done:false, value: 1}
+g2.throw('foo');
+console.log(g2.next());      // {done: false, value: 3}
+```
+- 但如果把`yield* [1,2,3]`放在`try`内，内部捕获后，将会终止后续执行
+```js
+function* xx() {
+	try{
+		yield* [1,2,3];
+	}catch(e){}
+}
+
+...
+g.throw('foo');
+...
+```
+
+## 总结
+- 迭代器是一个可以由任意对象实现的接口，支持连续获取对象产出的每一个值
+- 生成器是一种特殊的函数，调用后会返回一个生成器对象，可以暂停执行，`yield*`序列化为一串值
+
+# 8. 对象、类与面向对象编程
 
 
 ***
-
 [01]: ./img/1-DOM.png "1-DOM"
 [02]: ./img/2-symbol.png "2-symbol"
 [03]: ./img/3-Symbol.isconcatSpreadable.png "3-Symbol.isconcatSpreadable"
