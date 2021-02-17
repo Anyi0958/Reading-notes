@@ -2,8 +2,8 @@
 
 set /p "filename=filename: "
 
-mkdir %filename%
-cd %filename%
+mkdir "%filename%"
+cd "%filename%"
 
 echo %filename% Ŀ¼>>%filename%.md
 echo ^[TOC^]>>%filename%.md

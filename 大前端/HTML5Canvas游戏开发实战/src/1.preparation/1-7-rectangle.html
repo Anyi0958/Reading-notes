@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas" width="200" height="100"></canvas>
+    <script>
+        onload = () => {
+            // find canvas based id
+            let canvas = document.getElementById('canvas');
+            // verify
+            if(!canvas || !canvas.getContext)   return false;
+            // create context object
+            let ctx = canvas.getContext('2d');
+            // potray
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(0, 0, 150, 75);
+        };
+    </script>
+</body>
+</html>

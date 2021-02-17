@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById("canvas");
+        let ctx = c.getContext('2d');
+        ctx.lineWidth = 10;
+        ctx.strokeStyle = "blue";
+
+        ctx.lineCap = "butt";
+        ctx.beginPath();
+        ctx.moveTo(10,10);
+        ctx.lineTo(150,10);
+        ctx.stroke();
+
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(10,40);
+        ctx.lineTo(150,40);
+        ctx.stroke();
+
+        ctx.lineCap = "square";
+        ctx.beginPath();
+        ctx.moveTo(10,70);
+        ctx.lineTo(150,70);
+        ctx.stroke();                
+    </script>
+</body>
+</html>
