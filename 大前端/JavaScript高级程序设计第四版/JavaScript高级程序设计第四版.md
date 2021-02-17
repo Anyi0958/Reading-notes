@@ -2094,7 +2094,259 @@ g.throw('foo');
 - 生成器是一种特殊的函数，调用后会返回一个生成器对象，可以暂停执行，`yield*`序列化为一串值
 
 # 8. 对象、类与面向对象编程
+- 对象是一组属性的无序集合
+- 可以看作散列表
 
+## 属性的类型
+ECMA-262使用一些内部特性来描述属性的特征。
+- `JS`不能直接访问这些特性
+- 为了将某个特性标识为内部特性，规范会用两个中括号把特性的名称括起来，比如：`[[Enumerable]]`
+- 属性分为两种：数据属性和访问器属性
+对象字面量：
+```js
+let person = {
+	name: "fwx",
+	age: 18,
+	sayName() {
+		console.log(this.name);
+	}
+};
+```
+### 1. 数据属性
+1. `[[Configurable]]`属性是否可以通过`delete`删除并重新定义
+2. `[[Enumberable]]`属性是否可以通过`for-in`循环返回
+3. `[[Writable]]`属性的值是否可以被修改
+4. `[[Value]]`包含属性实际的值
+#### 修改属性的默认特性
+- 必须使用`Object.defineProperty()`
+- 3个参数：对象，属性名称，描述符对象
+- 描述符对象：即`configurable`,`enumerable`,`writable`,`value`
+```js
+let person = {};
+Object.defineProperty(person, "name", {
+    writable: false,
+    value: "fwx"
+});
+
+console.log(person.name);   // "fwx"
+person.name = "xwf";
+console.log(person.name);   // "fwx"
+```
+- 非严格模式下，尝试属性重新赋值会被忽略
+- 严格模式下，尝试修改会抛出错误
+### 2. 访问器属性
+- 访问器属性不包含数据值
+- 有2个函数：获取(getter)，设置(setter)，但这两个函数不是必须的
+- 在写入访问器属性时，会调用设置函数并传入新值
+#### 访问器属性的4个特性
+1. `[[Configurable]]`属性是否可以通过`delete`删除并重新定义，是否可以修改特性
+2. `[[Enumerable]]`属性是否可以通过`for-in`循环返回
+3. `[[Get]]`获取函数，在读取属性时调用
+4. `[[Set]]`设置函数，在写入属性时调用
+- 只有使用`Object.defineProperty()`才能定义
+```js
+// 定义一个对象，包含私有对象 year_ 和 公共成员 edition
+let book = {
+    year_: 2017,
+    edition: 1
+};
+
+Object.defineProperty(book, "year", {
+    get() {
+        return this.year_;
+    },
+    set(newValue) {
+        if(newValue > 2017){
+            this.year_ = newValue;
+            this.edition += newValue - 2017;
+        }
+    }
+});
+
+book.year = 2018;
+console.log(book.edition);  // 2
+```
+- `year_`中的下划线常用来表示该属性并不希望在对象方法的外部被访问
+- 以上是访问器属性的典型使用场景，即设置一个属性值会导致一些其他变化发生
+- `get`和`set`不一定都要定义
+	- 只定义获取函数意味着属性是只读的，尝试修改会被忽略
+	- 只定义设置函数，读取会返回`undefined`
+	- 在不支持`Object.defineProperty()`的浏览器中，没有办法修改`[[Configurable]]`或`[[Enumerable]]`
+
+## 定义多个属性
+- 一个对象定义多个属性：`Object.defineProperties()`
+```js
+let book = {};
+
+Object.defineProperties(book, {
+    year_: {
+        value: 2017
+    },
+
+    edition: {
+        value: 1
+    },
+
+    year: {
+        get() {
+            return this.year_;
+        },
+        set(newValue){
+            if(newValue > 2017){
+                this.year_ = newValue;
+                this.edition += newValue - 2017;
+            }
+        }
+    }
+});
+```
+
+## 读取属性的特性
+- 取得指定属性的属性描述符：`Object.getOwnPropertyDescriptor()`
+```js
+let descriptor = Object.getOwnPropertyDescriptor(book, "year_");
+console.log(descriptor.configurable);
+```
+- 返回对象的属性描述：`Object.getOwnPropertyDescriptors()`
+```js
+let book = {};
+
+Object.defineProperties(book, {
+    year_: {
+        value: 2017
+    },
+
+    edition: {
+        value: 1
+    },
+
+    year: {
+        get() {
+            return this.year_;
+        },
+        set(newValue){
+            if(newValue > 2017){
+                this.year_ = newValue;
+                this.edition += newValue - 2017;
+            }
+        }
+    }
+});
+
+console.log(Object.getOwnPropertyDescriptors(book));
+// { year_:
+//     { value: 2017,
+//       writable: false,
+//       enumerable: false,
+//       configurable: false },
+//    edition:
+//     { value: 1,
+//       writable: false,
+//       enumerable: false,
+//       configurable: false },
+//    year:
+//     { get: [Function: get],
+//       set: [Function: set],
+//       enumerable: false,
+//       configurable: false } }
+```
+
+## 合并对象
+- 合并/混入：把源对象所有的本地属性一起复制到目标对象上
+- `Mixin`：`Object.assign()`，接收一个目标对象和一个或多个源对象作为参数，然后将每个源对象中可枚举`Object.propertyIsEnumerable()`和自有属性`Object.hasOwnProperty()`复制到目标对象
+- 以字符串和符号为键的属性会被复制
+- `Object.assign()`对每个源对象执行的是浅复制，不能在两个对象间转移获取函数和设置函数
+```js
+let dest, src, result;
+
+// 简单复制
+dest = {};
+src = { id: 'src' };
+
+result = Object.assign(dest, src);
+
+// Object.assign 修改目标对象
+// 也会返回修改后的目标对象
+console.log(dest === result);   // true
+console.log(dest !== src);      // true
+console.log(result);            // {id: src}
+console.log(dest);              // {id: src}
+
+// 多个源对象
+dest = {};
+result = Object.assign(dest, {a: 'foo'}, {b: 'bar'});
+console.log(result);            // {a: foo, b: bar}
+
+// 获取函数和设置函数
+dest = {
+    set a(val){
+        console.log('error');
+    }
+};
+
+src = {
+    get a(){
+        console.log('get');
+        return 'foo';
+    }
+};
+
+Object.assign(dest, src);
+// 调用src的获取方法
+// 调用dest的设置方法并传入"foo"
+// 这里的设置函数不执行赋值操作
+// 实际上没有把值转过来
+console.log(dest);      // {set a(val)...}
+```
+- 如果赋值出现错误，操作终止并退出，同时抛出错误
+- `Object.assign()`没有"回滚"之前的概念，修改的就会继续存在
+```js
+let dest, src, result;
+
+// 覆盖属性
+dest = { id: 'dest' };
+
+result = Object.assign(dest,
+    {id: 'src1', a: 'foo'},
+    {id: 'src2', b: 'bar'});
+
+// Object.assign回覆盖重复的属性
+console.log(result);        // {id: src2, a: foo, b: bar}
+
+// 可以通过目标对象上的设置函数观察到覆盖的过程
+dest = {
+    set id(x) {
+        console.log(x);
+    }
+};
+
+Object.assign(dest,
+    {id: 'first'},
+    {id: 'second'},
+    {id: 'third'});
+// first
+// second
+// third
+
+// 对象引用
+dest = {};
+src = {a: {}};
+
+Object.assign(dest, src);
+
+// 浅复制意味着只会复制对象的引用
+console.log(dest);          // {a:{}}
+console.log(dest.a === src.a);  // true
+```
+
+## 对象标识及相等判定
+### 严格操作符无能为力
+- 严格操作符`===`有时候会失效
+`console.log(-0 === 0); // true`
+### 新增`Object.is()`
+- 必须接收两个参数
+- 考虑了上面的短板
+`console.log(Object.is(+0, -0)); //false`
 
 ***
 [01]: ./img/1-DOM.png "1-DOM"
