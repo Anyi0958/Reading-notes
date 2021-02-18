@@ -1,45 +1,45 @@
-Three.js Ä¿Â¼
+Three.js ç›®å½•
 [TOC]
 ***
-# Ç°ÑÔ
-±¾ÎÄÎªÑ§Ï°`Three.js`¹ı³ÌÖĞµÄ±Ê¼ÇºÍ¸öÈËÌå»á£¬ÈçÓĞĞèÒª£¬ÇëÔÄ¶Á¹ÙÍødoc
+# å‰è¨€
+æœ¬æ–‡ä¸ºå­¦ä¹ `Three.js`è¿‡ç¨‹ä¸­çš„ç¬”è®°å’Œä¸ªäººä½“ä¼šï¼Œå¦‚æœ‰éœ€è¦ï¼Œè¯·é˜…è¯»å®˜ç½‘doc
 
-# ÍÆ¼öÔÄ¶Á
-- [Three.jsÖĞÎÄÍø-µç×ÓÊé](http://www.webgl3d.cn/ "Three.jsÖĞÎÄÍø")
-- [Three.js¹ÙÍø](https://threejs.org/ "Three.js")
+# æ¨èé˜…è¯»
+- [Three.jsä¸­æ–‡ç½‘-ç”µå­ä¹¦](http://www.webgl3d.cn/ "Three.jsä¸­æ–‡ç½‘")
+- [Three.jså®˜ç½‘](https://threejs.org/ "Three.js")
 - [WebGL](http://www.webgl3d.cn/WebGL/ "WebGL")
 - [Three.js - github](https://github.com/mrdoob/three.js "Three.js github")
-- ¡¶WebGL±à³ÌÖ¸ÄÏ¡·
-- ¡¶Three.js¿ª·¢Ö¸ÄÏ¡·
+- ã€ŠWebGLç¼–ç¨‹æŒ‡å—ã€‹
+- ã€ŠThree.jså¼€å‘æŒ‡å—ã€‹
 - Physijs	
-PhysijsÊÇÒ»¿îÎïÀíÒıÇæ£¬¿ÉÒÔĞ­Öú»ùÓÚÔ­ÉúWebGL»òÊ¹ÓÃthree.js´´½¨Ä£ÄâÎïÀíÏÖÏó£¬±ÈÈçÖØÁ¦ÏÂÂä¡¢ÎïÌåÅö×²µÈÎïÀíÏÖ
+Physijsæ˜¯ä¸€æ¬¾ç‰©ç†å¼•æ“ï¼Œå¯ä»¥ååŠ©åŸºäºåŸç”ŸWebGLæˆ–ä½¿ç”¨three.jsåˆ›å»ºæ¨¡æ‹Ÿç‰©ç†ç°è±¡ï¼Œæ¯”å¦‚é‡åŠ›ä¸‹è½ã€ç‰©ä½“ç¢°æ’ç­‰ç‰©ç†ç°
 - stats.js
-JavaScriptĞÔÄÜ¼à¿ØÆ÷£¬Í¬ÑùÒ²¿ÉÒÔ²âÊÔwebglµÄäÖÈ¾ĞÔÄÜ
+JavaScriptæ€§èƒ½ç›‘æ§å™¨ï¼ŒåŒæ ·ä¹Ÿå¯ä»¥æµ‹è¯•webglçš„æ¸²æŸ“æ€§èƒ½
 - dat.gui	
-ÇáÁ¿¼¶µÄiconĞÎÓÃ»§½çÃæ¿ò¼Ü£¬¿ÉÒÔÓÃÀ´¿ØÖÆJavascriptµÄ±äÁ¿£¬±ÈÈçWebGLÖĞÒ»¸öÎïÌåµÄ³ß´ç¡¢ÑÕÉ«
+è½»é‡çº§çš„iconå½¢ç”¨æˆ·ç•Œé¢æ¡†æ¶ï¼Œå¯ä»¥ç”¨æ¥æ§åˆ¶Javascriptçš„å˜é‡ï¼Œæ¯”å¦‚WebGLä¸­ä¸€ä¸ªç‰©ä½“çš„å°ºå¯¸ã€é¢œè‰²
 - tween.js	
-½èÖútween.js¿ìËÙ´´½¨²¹¼ä¶¯»­£¬¿ÉÒÔ·Ç³£·½±ãµÄ¿ØÖÆ»úĞµ¡¢ÓÎÏ·½ÇÉ«ÔË¶¯
+å€ŸåŠ©tween.jså¿«é€Ÿåˆ›å»ºè¡¥é—´åŠ¨ç”»ï¼Œå¯ä»¥éå¸¸æ–¹ä¾¿çš„æ§åˆ¶æœºæ¢°ã€æ¸¸æˆè§’è‰²è¿åŠ¨
 - ThreeBSP	
-¿ÉÒÔ×÷Îªthree.jsµÄ²å¼ş£¬Íê³É¼¸ºÎÄ£ĞÍµÄ²¼¶û£¬¸÷ÀàÈıÎ¬½¨Ä£Èí¼ş»ù±¾¶¼ÓĞ²¼¶ûµÄ¸ÅÄî
+å¯ä»¥ä½œä¸ºthree.jsçš„æ’ä»¶ï¼Œå®Œæˆå‡ ä½•æ¨¡å‹çš„å¸ƒå°”ï¼Œå„ç±»ä¸‰ç»´å»ºæ¨¡è½¯ä»¶åŸºæœ¬éƒ½æœ‰å¸ƒå°”çš„æ¦‚å¿µ
 ***
-¿ò¼Ü£º
+æ¡†æ¶ï¼š
 ![1-instro][01]
 ***
-# `HTML`ÒıÈë`Three.js`ÒıÇæ
+# `HTML`å¼•å…¥`Three.js`å¼•æ“
 ```html
-<!--http¾ø¶ÔµØÖ·Ô¶³Ì¼ÓÔØ-->
+<!--httpç»å¯¹åœ°å€è¿œç¨‹åŠ è½½-->
 <script src="http://www.yanhuangxueyuan.com/3D/example/three.js"></script>
-<!-- Ñ¹Ëõ°æ±¾ -->
+<!-- å‹ç¼©ç‰ˆæœ¬ -->
 <script src="http://www.yanhuangxueyuan.com/3D/example/three.min.js"></script>
 ```
 
-# 3D³¡¾°
-## ÒıÈëÒıÇæ
+# 3Dåœºæ™¯
+## å¼•å…¥å¼•æ“
 ```html
-<!--http¾ø¶ÔµØÖ·Ô¶³Ì¼ÓÔØ-->
+<!--httpç»å¯¹åœ°å€è¿œç¨‹åŠ è½½-->
 <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
 ```
-## °¸ÀıÔ´Âë
+## æ¡ˆä¾‹æºç 
 
 ```html
 <!DOCTYPE html>
@@ -60,77 +60,77 @@ JavaScriptĞÔÄÜ¼à¿ØÆ÷£¬Í¬ÑùÒ²¿ÉÒÔ²âÊÔwebglµÄäÖÈ¾ĞÔÄÜ
 <body>
     <script>
         /* 
-        *   ´´½¨³¡¾°¶ÔÏóScene
+        *   åˆ›å»ºåœºæ™¯å¯¹è±¡Scene
          */
         let scene = new THREE.Scene();
     
         /*
-        *   ´´½¨Íø¸ñÄ£ĞÍ 
+        *   åˆ›å»ºç½‘æ ¼æ¨¡å‹ 
          */
-        // ´´½¨Ò»¸öÁ¢·½Ìå¼¸ºÎ¶ÔÏóGeometry
+        // åˆ›å»ºä¸€ä¸ªç«‹æ–¹ä½“å‡ ä½•å¯¹è±¡Geometry
         let geometry = new THREE.BoxGeometry(100, 100, 100);
-        // ²ÄÖÊ¶ÔÏó
+        // æè´¨å¯¹è±¡
         let material = new THREE.MeshLambertMaterial({
             color: 0x0000ff
         });
-        // Íø¸ñÄ£ĞÍ¶ÔÏóMesh
+        // ç½‘æ ¼æ¨¡å‹å¯¹è±¡Mesh
         let mesh = new THREE.Mesh(geometry, material);
-        // Íø¸ñÄ£ĞÍÌí¼Óµ½³¡¾°ÖĞ
+        // ç½‘æ ¼æ¨¡å‹æ·»åŠ åˆ°åœºæ™¯ä¸­
         scene.add(mesh);
         
         /* 
-        *   ¹âÔ´ÉèÖÃ
+        *   å…‰æºè®¾ç½®
          */
-        // µã¹âÔ´
+        // ç‚¹å…‰æº
         let point = new THREE.PointLight(0xffffff);
-        // µã¹âÔ´Î»ÖÃ
+        // ç‚¹å…‰æºä½ç½®
         point.position.set(400, 200, 300);
-        // µã¹âÔ´Ìí¼Óµ½³¡¾°ÖĞ
+        // ç‚¹å…‰æºæ·»åŠ åˆ°åœºæ™¯ä¸­
         scene.add(point);
-        // »·¾³¹â
+        // ç¯å¢ƒå…‰
         let ambient = new THREE.AmbientLight(0x444444);
         scene.add(ambient);
         // console.log(scene);
         /* 
-        *   Ïà»úÉèÖÃ
+        *   ç›¸æœºè®¾ç½®
          */
         // window's width
         let width = window.innerWidth;
         // window's height
         let height = window.innerHeight;
     
-        // ´°¿Ú¿í¸ß±È
+        // çª—å£å®½é«˜æ¯”
         let k = width / height;
     
-        // ÈıÎ¬³¡¾°ÏÔÊ¾·¶Î§¿ØÖÆÏµÊı£¬ÏµÊıÔ½´ó£¬ÏÔÊ¾µÄ·¶Î§Ô½´ó
+        // ä¸‰ç»´åœºæ™¯æ˜¾ç¤ºèŒƒå›´æ§åˆ¶ç³»æ•°ï¼Œç³»æ•°è¶Šå¤§ï¼Œæ˜¾ç¤ºçš„èŒƒå›´è¶Šå¤§
         let s = 200;
     
-        // ´´½¨Ïà»ú
+        // åˆ›å»ºç›¸æœº
         let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
-        // ÉèÖÃÏà»úµÄÎ»ÖÃ
+        // è®¾ç½®ç›¸æœºçš„ä½ç½®
         camera.position.set(200, 300, 200);
-        // ÉèÖÃÏà»ú·½Ïò£¬Ö¸ÏòµÄ³¡¾°¶ÔÏó
+        // è®¾ç½®ç›¸æœºæ–¹å‘ï¼ŒæŒ‡å‘çš„åœºæ™¯å¯¹è±¡
         camera.lookAt(scene.position);
     
         /* 
-        *   ´´½¨äÖÈ¾Æ÷¶ÔÏó
+        *   åˆ›å»ºæ¸²æŸ“å™¨å¯¹è±¡
          */
         let renderer = new THREE.WebGLRenderer();
     
-        // ÉèÖÃäÖÈ¾ÇøÓò³ß´ç
+        // è®¾ç½®æ¸²æŸ“åŒºåŸŸå°ºå¯¸
         renderer.setSize(width, height);
-        // ÉèÖÃ±³¾°ÑÕÉ«
+        // è®¾ç½®èƒŒæ™¯é¢œè‰²
         renderer.setClearColor(0xb9d3ff, 1);
-        // ÏòbodyÔªËØÖĞ²åÈëcanvas¶ÔÏó£¬²¢Ö´ĞĞäÖÈ¾²Ù×÷
+        // å‘bodyå…ƒç´ ä¸­æ’å…¥canvaså¯¹è±¡ï¼Œå¹¶æ‰§è¡Œæ¸²æŸ“æ“ä½œ
         document.body.appendChild(renderer.domElement);
-        // Ö¸¶¨³¡¾°¡¢Ïà»ú×÷Îª²ÎÊı
+        // æŒ‡å®šåœºæ™¯ã€ç›¸æœºä½œä¸ºå‚æ•°
         renderer.render(scene, camera);
     </script>
 </body>
 
 </html>
 ```
-½á¹û£º
+ç»“æœï¼š
 ![2-geometry][02]
 
 
