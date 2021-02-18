@@ -620,3 +620,4 @@ stu.getType();
 [14]: ./img/2-8-tridratic.png "2-8-tridratic"
 [15]: ./img/2-9-preclip.png "2-9-preclip"
 [16]: ./img/2-9-postclip.png "2-9-postclip.png"
+
