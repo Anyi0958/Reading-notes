@@ -295,7 +295,313 @@ stu.getType();
 ![2-1-line-2.png][05]
 
 ### 2. 画矩形
+- `xx.strokeRect()`可以替换为`xx.rect();xx.stroke();`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
 
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = "blue";
+        ctx.beginPath();
+        ctx.strokeRect(10, 10, 70, 40);        
+    </script>
+</body>
+</html>
+```
+结果：
+![2-2-rectangle][06]
+#### 实心矩阵
+- 替换为`fillRect()`
+- 也可以换做`ctx.rect();ctx.fill();`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.lineWidth = 5;
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.fillRect(10, 10, 70, 40);        
+
+    </script>
+</body>
+</html>
+```
+结果：
+![2-3-fillRect][07]
+
+### 3. 圆形
+- `arc(x,y,r,rid,endrid,yy)`
+- `xx.fill()`填充实心圆
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.lineWidth = 5;
+        ctx.strokeStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(100, 100, 70, 0, 130*Math.PI/100, true);
+        ctx.stroke();
+    </script>
+</body>
+</html>
+```
+![2-4-circle][08]
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.lineWidth = 5;
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.arc(100, 100, 70, 0, 130*Math.PI/100, true);
+        ctx.fill();
+    </script>
+</body>
+</html>
+```
+![2-4-circle-2.png][09]
+
+### 4. 画圆角矩形
+- 圆角：`arcTo(x,y,x,y,r)`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.beginPath();
+        ctx.strokeStyle = "red";
+        ctx.moveTo(20, 20);
+        ctx.lineTo(70, 20);
+        ctx.arcTo(120, 30, 120, 70, 50);
+        ctx.lineTo(120, 120);
+        ctx.stroke();
+    </script>
+</body>
+</html>
+```
+![2-5-arline][10]
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.beginPath();
+        ctx.strokeStyle = "red";
+        ctx.moveTo(40, 20);
+        ctx.lineTo(120, 20);
+        ctx.arcTo(120, 20, 120, 40, 20);
+        ctx.lineTo(120, 70);
+
+        ctx.arcTo(120,90,100,90,20);
+        ctx.lineTo(40,90);
+
+        ctx.arcTo(20,90,20,70,20);
+        ctx.lineTo(20, 40);
+
+        ctx.arcTo(20,20,40,20,20);
+        ctx.stroke();
+    </script>
+</body>
+</html>
+```
+![2-5-arline-2.png][11]
+
+### 5. 擦除Canvas画板
+- 擦除矩形区域：`clerRect(x,y,long,width)`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.fillStyle = 'red';
+        ctx.beginPath();
+        ctx.fillRect(10,10,200,100);
+        ctx.clearRect(30,30,50,50);
+    </script>
+</body>
+</html>
+```
+![2-6-clear][12]
+
+## 复杂图形
+### 1. 曲线
+- 又名贝塞尔曲线，贝兹曲线或贝济埃曲线，应用于二维图形的数学曲线
+#### 1. 二次贝塞尔曲线
+- 存在一个控制点
+- `quadraticCurveTo(cpx, cpy, x, y)`
+- cpx,cpy 控制点的坐标
+- x,y 终点坐标
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.strokeStyle = 'red';
+        ctx.beginPath();
+
+        ctx.moveTo(100, 100);
+        ctx.quadraticCurveTo(20, 50, 200, 20);
+        ctx.stroke();
+    </script>
+</body>
+</html>
+```
+![2-7-quadratic][13]
+
+#### 2. 三次贝塞尔曲线
+- 三次贝塞尔又两个控制点
+- `bezierCurveTo(cx1,cy1,cx2,cy2,endx,endy)`
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.strokeStyle = 'red';
+        ctx.beginPath();
+
+        ctx.moveTo(68, 130);
+        ctx.bezierCurveTo(20,10,268,10,268,170);
+        ctx.stroke();
+    </script>
+</body>
+</html>
+```
+![2-8-tridratic][14]
+
+### 2. clip在指定区域绘图
+- `clip`使用当前路径作为连续绘制操作的剪切区域
+- 无论画板上绘制了多大的图形，最后的图形只能由`clip`这扇窗户决定
+- 先绘制一个圆，`clip`函数把这个圆作为绘制操作的区域，之后的图形只能显示在这个区域离
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.arc(100,100,40,0,360*Math.PI/180,true);
+        ctx.clip();
+
+        ctx.beginPath();
+
+        ctx.fillStyle = "lightblue";
+        ctx.fillRect(0,0,300,150);
+
+    </script>
+</body>
+</html>
+```
+对比
+前：
+![2-9-preclip][15]
+后：
+![2-9-postclip.png][16]
+
+### 3. 自定义图形
 
 ***
 [01]: ./img/1-3-canvas.png "1-3-canvas"
@@ -303,3 +609,14 @@ stu.getType();
 [03]: ./img/1-4-geo-2.png "1-4-geo-2"
 [04]: ./img/2-1-line.png "2-1-line"
 [05]: ./img/2-1-line-2.png "2-1-line-2.png"
+[06]: ./img/2-2-rectangle.png "2-2-rectangle"
+[07]: ./img/2-3-fillRect.png "2-3-fillRect"
+[08]: ./img/2-4-circle.png "2-4-circle"
+[09]: ./img/2-4-circle-2.png "2-4-circle-2.png"
+[10]: ./img/2-5-arline.png "2-5-arline"
+[11]: ./img/2-5-arline-2.png "2-5-arline-2.png"
+[12]: ./img/2-6-clear.png "2-6-clear"
+[13]: ./img/2-7-quadratic.png "2-7-quadratic"
+[14]: ./img/2-8-tridratic.png "2-8-tridratic"
+[15]: ./img/2-9-preclip.png "2-9-preclip"
+[16]: ./img/2-9-postclip.png "2-9-postclip.png"
