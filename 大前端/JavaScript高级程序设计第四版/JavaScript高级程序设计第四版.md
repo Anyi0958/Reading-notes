@@ -2348,6 +2348,220 @@ console.log(dest.a === src.a);  // true
 - 考虑了上面的短板
 `console.log(Object.is(+0, -0)); //false`
 
+## 增强对象语法
+- 方便
+
+### 1. 属性值简写
+- 属性名和变量名是一样，可以简写
+```js
+let name = "Matt";
+let person = {
+	// name: name
+	name
+};
+console.log(person);	// {name: "matt"}
+```
+- 代码压缩程序会在不同作用域间保留属性名，以防止找不到引用
+```js
+function makePerson(a) {
+    return {
+        a
+    };
+}
+
+let person = makePerson("matt");
+console.log(person);    // matt
+```
+- 编译器会保留初始的`name`标识符
+```js
+function makePerson(a) {
+    return {
+        name: a
+    };
+}
+
+let p = makePerson("matt");
+console.log(p.name);        // matt
+```
+
+### 2. 可计算属性
+- 不能在对象字面量中直接动态命名属性
+```js
+let person = {};
+// error
+const namekey = "name";
+// correct
+person[name] = "matt";
+```
+- 可计算属性，完成动态属性赋值
+```js
+const namekey = "name";
+
+let person = {
+	[namekey]: "matt"
+};
+
+console.log(person);	// {name: "matt"}
+```
+- 可计算属性本身可以是复杂的表达式，在实例化时求值
+```js
+const nameKey = 'name';
+let uniqueToken = 0;
+
+function getUniqueKey(key) {
+    return `${key}_${uniqueToken++}`;
+}
+
+let person = {
+    [getUniqueKey(nameKey)]: 'matt'
+};
+
+console.log(person);    //{ name_0: 'matt' }
+```
+- 如果计算属性表达式中抛出任何错误，都会中断对象创建
+- 抛出错误后，之前的计算时不能回滚的
+### 3. 简写方法名
+常规对象定义方法：
+```js
+let person = {
+    sayName: name => {
+        console.log(`my name is ${name}`);
+    }
+};
+
+person.sayName('Matt');     // my name is matt
+```
+- 缩短方法声明
+```js
+let person2 = {
+    sayName(name) {
+        console.log(`my name is ${name}`);
+    }
+};
+
+person2.sayName('matt');    // my name is matt
+```
+- 也适用于`get`, `set`
+```js
+get name(){}
+```
+- 计算属性键相互兼容
+```js
+const methodkey = 'sayName';
+[methodkey](name) {}
+```
+
+### 对象解构
+- 解构：`let {name: name} = person`
+- 省略：`let {name} = person`
+- 不存在默认赋值：`let {name, age = 'xx'} = person`
+- `null`和`undefined`不能被解构
+#### 1. 嵌套解构
+- 解构来赋值对象属性
+```js
+let person = {
+    name: 'matt',
+    age: 16
+};
+
+let personCopy = {};
+
+({
+    name: personCopy.name,
+    age: personCopy.age
+} = person);
+
+console.log(personCopy);    //{ name: 'matt', age: 16 }
+```
+#### 2. 部分解构
+- 如果一个出错，前面成功，后面出错，解构赋值只完成一部分
+```js
+let person = {
+    name: 'matt',
+    age: 18
+};
+
+let personame, personbar, personage;
+
+try {
+    ({name: personame, 
+        foo: personbar, 
+        age: personage} = person);
+} catch(e) {}
+
+console.log(personame, personbar, personage); //matt undefined 18
+```
+
+#### 3. 参数上下文匹配
+- 在函数参数列表中进行解构赋值
+```js
+let person = {
+    name: "matt",
+    age: 17
+};
+
+function printPerson(foo, {name, age}, bar){
+    console.log(arguments);
+    console.log(name, age);
+}
+
+printPerson('1st', person, '2nd');
+// [Arguments] { '0': '1st', '1': { name: 'matt', age: 17 }, '2': '2nd' }
+// matt 17
+```
+## 创建对象
+### 工厂模式
+- 用于抽象创建特定对象的过程
+```js
+function createPerson(name, age, job){
+    let o = new Object();
+
+    o.name = name;
+    o.age = age;
+    o.job = job;
+    o.sayName = () => {
+        console.log(this.name);
+    };
+    return o;
+}
+
+let person1 = createPerson("matt", 29, "w1");
+let person2 = createPerson("ger", 18, "doctor");
+
+console.log(person1, person2);
+// { name: 'matt', age: 29, job: 'w1', sayName: [Function] } 
+// { name: 'ger', age: 18, job: 'doctor', sayName: [Function] }
+```
+### 构造函数模式
+- `ECMAScript`中的构造函数是用于创建特定类型对象的
+自定义构造函数：
+```js
+function Person(name, age, job){
+    this.name = name;
+    this.age = age;
+    this.job = job;
+
+    this.sayName = () => {
+        console.log(this.name);
+    };
+}
+
+let person1 = new Person("matt", 18, "fw");
+```
+- 构造函数的两种表达：`let person1 = new Person()`或者`let person2 = new Person`
+#### 1. 构造函数也是函数
+```js
+let o = new Object();
+Person.call(o, "moxi", 18, "Nurse");
+o.sayName();	// moxi
+```
+#### 2. 构造函数的问题
+- 缺点：其定义的方法会在每个实例上都创建一遍
+```js
+this.sayName = new Function() {};
+```
+
+
 ***
 [01]: ./img/1-DOM.png "1-DOM"
 [02]: ./img/2-symbol.png "2-symbol"
@@ -2366,3 +2580,4 @@ console.log(dest.a === src.a);  // true
 [15]: ./img/15-encode.png "15-encode"
 [16]: ./img/16-array.png "16-array"
 [17]: ./img/17-iterator.png "17-iterator"
+
