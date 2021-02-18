@@ -139,3 +139,4 @@ ENTRYPOINT ['ls', '-s']
 
 ## Ö´ÐÐÃüÁî
 `docker run -d -p 9080:8080 --name xx -v /usr/local:/tmp --privileged=true xx-name`
+
