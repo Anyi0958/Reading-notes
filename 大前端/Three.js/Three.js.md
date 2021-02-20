@@ -367,6 +367,428 @@ setInterval("render()", 20)
 ![08-rotate][08]
 
 ## 渲染频率
+- 调用渲染方法`.render()`进行渲染的渲染频率不能太低
+- `setInterval(...,200)`相当于每秒渲染5次，存在卡顿，而如果太高的话，计算机硬件资源跟不上
+- 正常渲染频率控制在每秒$30~60$次
+
+## 函数`requestAnimationFrame()`
+- 实际开发中，为了更好的利用浏览器渲染，可以使用函数`requestAnimationFrame()`代替`setInterval()`
+- 也是`window`对象的方法
+- `requestAnimationFrame()`函数的参数是将要被调用函数的函数名
+	- 调用一个函数不是立即调用，而是向浏览器发起一个执行某函数的请求
+	- 一般默认保持$60FPS$的频率
+测试例子：
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry = new THREE.BoxGeometry(100, 100, 100);
+        // 材质对象
+        let material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        // 网格模型对象Mesh
+        let mesh = new THREE.Mesh(geometry, material);
+        // 网格模型添加到场景中
+        scene.add(mesh);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行requestAnimationFrame函数
+        function render(){
+            renderer.render(scene, camera);
+            mesh.rotateY(0.01);
+            requestAnimationFrame(render);
+        }
+        render();
+    </script>
+</body>
+</html>
+```
+展示结果：
+![9-rotate][09]
+
+## 均匀旋转
+- 实际情况里，`requestAnimationFrame(render)`请求的函数不一定能按照理想的$60FPS$频率执行，时间间隔也不一定相同
+- 为了解决不均匀的问题，需要记录两次执行绘制函数的时间间隔
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry = new THREE.BoxGeometry(100, 100, 100);
+        // 材质对象
+        let material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        // 网格模型对象Mesh
+        let mesh = new THREE.Mesh(geometry, material);
+        // 网格模型添加到场景中
+        scene.add(mesh);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行requestAnimationFrame函数
+        // 上次时间
+        let T0 = new Date();
+        function render(){
+            let T1 = new Date();
+            let t = T1 - T0;
+
+            T0 = T1;
+
+            requestAnimationFrame(render);
+            renderer.render(scene, camera);
+            // 旋转角速度0.001弧度每毫秒
+            mesh.rotateY(0.001 * t);            
+        }
+        render();
+    </script>
+</body>
+</html>
+
+```
+# 3. 鼠标操作三维场景
+- 使用鼠标操作三维场景，借助`Three.js`的控件`OrbitControls.js`
+- 引入`OrbitControls.js`：`<script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>`
+## 代码实现
+- 创建控件对象：`let controls = new THREE.OrbitControls(camera,renderer.domElement)`
+- 监听事件：`controls.addEventListener('change', render)`
+```js
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+    <script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry = new THREE.BoxGeometry(100, 100, 100);
+        // 材质对象
+        let material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        // 网格模型对象Mesh
+        let mesh = new THREE.Mesh(geometry, material);
+        // 网格模型添加到场景中
+        scene.add(mesh);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行渲染
+        function render(){
+            renderer.render(scene, camera);
+        }
+        render();
+        // 创建控件对象
+        let controls = new THREE.OrbitControls(camera, renderer.domElement);
+        // 监听事件
+        controls.addEventListener('change', render);
+    </script>
+</body>
+</html>
+```
+结果展示：
+![10-OrbitControls][10]
+
+## 场景操作
+- 通过`OrbitCOntrols`操作改变相机状态时，没必要通过`addEventListener()`，可以直接通过`requestAnimationFrame()`
+- 注意开发中不要同时使用`requestAnimationFrame()`或`controls.addEventListener('change', render)`调用同一个函数，这样会冲突
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+    <script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry = new THREE.BoxGeometry(100, 100, 100);
+        // 材质对象
+        let material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        // 网格模型对象Mesh
+        let mesh = new THREE.Mesh(geometry, material);
+        // 网格模型添加到场景中
+        scene.add(mesh);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行渲染
+        function render(){
+            renderer.render(scene, camera);
+            mesh.rotateY(0.01);
+            requestAnimationFrame(render);
+        }
+        render();
+        // 创建控件对象
+        let controls = new THREE.OrbitControls(camera, renderer.domElement);                
+    </script>
+</body>
+</html>
+
+```
+结果展示：
+![11-rotabeOrbit][11]
+
+# 4. $3D$场景中插入新的几何体
+
 
 ***
 [01]: ./img/1-instro.png "1-instro"
@@ -377,3 +799,6 @@ setInterval("render()", 20)
 [06]: ./img/6-ProcessDetailed.png "6-ProcessDetailed"
 [07]: ./img/7-WebGL.png "7-WebGL"
 [08]: ./img/08-rotate.gif "08-rotate"
+[09]: ./img/9-rotate.gif "9-rotate.gif"
+[10]: ./img/10-OrbitControls.gif "10-OrbitControls"
+[11]: ./img/11-rotabeOrbit.gif "11-rotabeOrbit"
