@@ -788,6 +788,370 @@ setInterval("render()", 20)
 ![11-rotabeOrbit][11]
 
 # 4. $3D$场景中插入新的几何体
+## `SphereGeometry`构造函数
+- 使用：`SphereGeometry(radius, widthSegments, heightSegments)`
+
+## 绘制球体网格模型
+代码：
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+    <script src="http://www.yanhuangxueyuan.com/threejs/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个几何球体对象Geometry
+        let geometry = new THREE.SphereGeometry(60, 40, 40);
+        // 材质对象
+        let material = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        // 网格模型对象Mesh
+        let mesh = new THREE.Mesh(geometry, material);
+        // 网格模型添加到场景中
+        scene.add(mesh);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行渲染
+        function render(){
+            renderer.render(scene, camera);
+            mesh.rotateY(0.01);
+            requestAnimationFrame(render);
+        }
+        render();
+        // 创建控件对象
+        let controls = new THREE.OrbitControls(camera, renderer.domElement);                
+    </script>
+</body>
+</html>
+
+```
+
+## 更多几何体
+- 常见文档：[API](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/geometries/CylinderGeometry "几何体文档")
+常见推荐：
+```js
+//长方体 参数：长，宽，高
+var geometry = new THREE.BoxGeometry(100, 100, 100);
+// 球体 参数：半径60  经纬度细分数40,40
+var geometry = new THREE.SphereGeometry(60, 40, 40);
+// 圆柱  参数：圆柱面顶部、底部直径50,50   高度100  圆周分段数
+var geometry = new THREE.CylinderGeometry( 50, 50, 100, 25 );
+// 正八面体
+var geometry = new THREE.OctahedronGeometry(50);
+// 正十二面体
+var geometry = new THREE.DodecahedronGeometry(50);
+// 正二十面体
+var geometry = new THREE.IcosahedronGeometry(50);
+```
+## 同时绘制多个几何体
+1. 嵌入页面：`<embed width="770" height="500" src="1.插入多个几何体并偏移.html"/>`
+2. 创建一个几何体对象和一个材质对象，然后在绘制的时候，多绘制几个几何体
+绘制展示：
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry1 = new THREE.BoxGeometry(100, 100, 100);
+        // Sphere
+        let geometry2 = new THREE.SphereGeometry(60, 40, 40);
+        // 圆柱
+        let geometry3 = new THREE.CylinderGeometry(50, 50, 100, 25);
+        // 材质对象
+        let material1 = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        let material2 = new THREE.MeshLambertMaterial({
+            color: 0xff00ff
+        });
+        let material3 = new THREE.MeshLambertMaterial({
+            color: 0xffff00
+        });
+        // 网格模型对象Mesh
+        let mesh1 = new THREE.Mesh(geometry1, material1);
+        let mesh2 = new THREE.Mesh(geometry2, material2);
+        let mesh3 = new THREE.Mesh(geometry3, material3);
+        // 位置选择
+        // 球体沿y轴正方向平移120
+        mesh2.translateY(120);
+        // 圆柱的x,y,z坐标
+        mesh3.position.set(120,0,0);
+
+        // 网格模型添加到场景中
+        scene.add(mesh1);
+        scene.add(mesh2);
+        scene.add(mesh3);
+        
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行requestAnimationFrame函数
+        function render(){
+            renderer.render(scene, camera);
+            mesh1.rotateY(0.01);
+            requestAnimationFrame(render);
+        }
+        render();
+    </script>
+</body>
+</html>
+
+```
+结果展示：
+![12-MultiGeometry][12]
+
+## 辅助三维坐标系`AxisHelper`
+- 方便调试预览，提供了一个辅助的三维坐标系
+- 可以直接调用`THREE.AxisHelper(250)`，参数表示坐标系大小，通过`scene.add()`插入到场景中即可
+```html
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+    <script src="http://www.yanhuangxueyuan.com/versions/threejsR92/build/three.js"></script>
+</head>
+<body>
+    <script>
+        /* 
+        *   创建场景对象Scene
+         */
+        let scene = new THREE.Scene();
+    
+        /*
+        *   创建网格模型 
+         */
+        // 创建一个立方体几何对象Geometry
+        let geometry1 = new THREE.BoxGeometry(100, 100, 100);
+        // Sphere
+        let geometry2 = new THREE.SphereGeometry(60, 40, 40);
+        // 圆柱
+        let geometry3 = new THREE.CylinderGeometry(50, 50, 100, 25);
+        // 材质对象
+        let material1 = new THREE.MeshLambertMaterial({
+            color: 0x0000ff
+        });
+        let material2 = new THREE.MeshLambertMaterial({
+            color: 0xff00ff
+        });
+        let material3 = new THREE.MeshLambertMaterial({
+            color: 0xffff00
+        });
+        // 网格模型对象Mesh
+        let mesh1 = new THREE.Mesh(geometry1, material1);
+        let mesh2 = new THREE.Mesh(geometry2, material2);
+        let mesh3 = new THREE.Mesh(geometry3, material3);
+        // 位置选择
+        // 球体沿y轴正方向平移120
+        mesh2.translateY(120);
+        // 圆柱的x,y,z坐标
+        mesh3.position.set(120,0,0);
+
+        // 网格模型添加到场景中
+        scene.add(mesh1);
+        scene.add(mesh2);
+        scene.add(mesh3);
+        
+        let axesHelper = new THREE.AxesHelper(250);
+        scene.add(axesHelper);
+
+        /* 
+        *   光源设置
+         */
+        // 点光源
+        let point = new THREE.PointLight(0xffffff);
+        // 点光源位置
+        point.position.set(400, 200, 300);
+        // 点光源添加到场景中
+        scene.add(point);
+        // 环境光
+        let ambient = new THREE.AmbientLight(0x444444);
+        scene.add(ambient);
+        // console.log(scene);
+        /* 
+        *   相机设置
+         */
+        // window's width
+        let width = window.innerWidth;
+        // window's height
+        let height = window.innerHeight;
+    
+        // 窗口宽高比
+        let k = width / height;
+    
+        // 三维场景显示范围控制系数，系数越大，显示的范围越大
+        let s = 200;
+    
+        // 创建相机
+        let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+        // 设置相机的位置
+        camera.position.set(200, 300, 200);
+        // 设置相机方向，指向的场景对象
+        camera.lookAt(scene.position);
+    
+        /* 
+        *   创建渲染器对象
+         */
+        let renderer = new THREE.WebGLRenderer();
+    
+        // 设置渲染区域尺寸
+        renderer.setSize(width, height);
+        // 设置背景颜色
+        renderer.setClearColor(0xb9d3ff, 1);
+        // 向body元素中插入canvas对象，并执行渲染操作
+        document.body.appendChild(renderer.domElement);
+        // 执行requestAnimationFrame函数
+        function render(){
+            renderer.render(scene, camera);
+            mesh1.rotateY(0.01);
+            requestAnimationFrame(render);
+        }
+        render();
+    </script>
+</body>
+</html>
+```
+结果：
+![13-axesHelper][13]
+
+# 设置材质效果
 
 
 ***
@@ -802,3 +1166,5 @@ setInterval("render()", 20)
 [09]: ./img/9-rotate.gif "9-rotate.gif"
 [10]: ./img/10-OrbitControls.gif "10-OrbitControls"
 [11]: ./img/11-rotabeOrbit.gif "11-rotabeOrbit"
+[12]: ./img/12-MultiGeometry.gif "12-MultiGeometry"
+[13]: ./img/13-axesHelper.png "13-axesHelper"
