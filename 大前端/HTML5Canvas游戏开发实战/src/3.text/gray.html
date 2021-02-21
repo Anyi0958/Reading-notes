@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+            let c = document.getElementById('canvas');
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            let ctx = c.getContext('2d');
+
+            let image = new Image();
+            image.src = "./show.jpg";
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0,250,250);
+                let imgdata = ctx.getImageData(0,0,250,250);
+                let pixels = imgdata.data;
+                // RGB取反
+                for(let i = 0, n = pixels.length; i < n; i += 4){
+                    let grayscale = pixels[i] * .3 + 
+                                pixels[i+1] * .59 +
+                                pixels[i+2] * .11;
+                    pixels[i] = grayscale;  // red
+                    pixels[i+1] = grayscale;    // green
+                    pixels[i+2] = grayscale;    // blue
+                }
+
+                ctx.putImageData(imgdata, 260, 0);
+            };
+
+
+    </script>
+</body>
+</html>

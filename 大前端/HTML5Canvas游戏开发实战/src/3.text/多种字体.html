@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script type="text/javascript">
+        var c = document.getElementById('canvas');
+        var ctx = c.getContext('2d');
+
+        ctx.beginPath();
+        // 30px
+        ctx.font = "30px Arial";
+        ctx.fillText("Hello World", 100, 50);
+
+        ctx.beginPath();
+        // 50px
+        ctx.font = "50px Arial";
+        ctx.fillText("Hello World", 100, 150);
+
+        ctx.beginPath();
+        // 100px
+        ctx.font = "100px Arial";
+        ctx.fillText("Hello World", 100, 250);
+    </script>
+</body>
+</html>

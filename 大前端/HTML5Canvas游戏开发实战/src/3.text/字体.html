@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        ctx.beginPath();
+        ctx.font = "30px Arial";
+        ctx.fillText("Hello World Arial", 50, 50);
+
+        ctx.beginPath();
+        ctx.font = "30px Verdana";
+        ctx.fillText("Hello World Verdana", 50, 100);
+
+        ctx.beginPath();
+        ctx.font = "30px Times New Roman";
+        ctx.fillText("Hello World Times New Roman", 50, 150);
+
+        ctx.beginPath();
+        ctx.font = "30px Courier New";
+        ctx.fillText("Hello World Courier New", 50, 200);
+    </script>
+</body>
+</html>

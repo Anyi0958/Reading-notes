@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+            let c = document.getElementById('canvas');
+            c.width = window.innerWidth;
+            c.height = window.innerHeight;
+            let ctx = c.getContext('2d');
+
+            ctx.shadowColor = "#ff0000";
+            ctx.shadowBlur = 100;
+            ctx.shadowOffsetX = 20;
+            ctx.shadowOffsetY = 30;
+
+            let image = new Image();
+            image.src = "./show.jpg";
+            image.onload = () => {
+                ctx.drawImage(image, 0, 0,250,250);
+            };
+
+
+    </script>
+</body>
+</html>

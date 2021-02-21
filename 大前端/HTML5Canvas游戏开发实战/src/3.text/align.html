@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        let ctx = c.getContext('2d');
+
+        window.onload = function() {
+            ctx.moveTo(160, 0);
+        ctx.lineTo(160, 500);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.textAlign = 'start';
+        ctx.font = '30px Arial';
+        ctx.fillText("Hello World(start)",160,50);
+
+
+        ctx.beginPath();
+        ctx.textAlign = 'end';
+        ctx.font = '30px Arial';
+        ctx.fillText("Hello World",160,100);
+
+        ctx.beginPath();
+        ctx.textAlign = 'left';
+        ctx.font = '30px Arial';
+        ctx.fillText("Hello World",160,150);
+
+        ctx.beginPath();
+        ctx.textAlign = 'center';
+        ctx.font = '30px Arial';
+        ctx.fillText("Hello World",160,200);
+
+        ctx.beginPath();
+        ctx.textAlign = 'right';
+        ctx.font = '30px Arial';
+        ctx.fillText("Hello World",160,250);
+        };
+    </script>
+</body>
+</html>
