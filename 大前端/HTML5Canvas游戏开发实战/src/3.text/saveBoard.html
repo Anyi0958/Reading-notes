@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    img<br />
+    <button id="export" style="width: 80px;height: 80px;"></button>
+    <hr />
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        let c = document.getElementById('canvas');
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        let ctx = c.getContext('2d');
+
+        // draw one black board
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,600,300);
+
+        // 按下标记
+        let onoff = false,
+            oldx = -10,
+            oldy = -10;
+
+        // 设置颜色
+        let linecolor = "white";
+
+        // 设置线宽
+        let linw = 4;
+
+        // 添加鼠标事件
+        // 按下
+        c.addEventListener('mousedown', event => {
+            onoff = true;
+            // 位置 - 10是为了矫正位置，把绘图放在鼠标指针的顶端
+            oldx = event.pageX - 10;
+            oldy = event.pageY - 10;
+        },false);
+        // 移动
+        c.addEventListener('mousemove', event => {
+            if(onoff == true){
+                let newx = event.pageX - 10,
+                    newy = event.pageY - 10;
+
+                // 绘图
+                ctx.beginPath();
+                ctx.moveTo(oldx,oldy);
+                ctx.lineTo(newx,newy);
+                ctx.strokeStyle = linecolor;
+                ctx.lineWidth = linw;
+                ctx.lineCap = "round";
+                ctx.stroke();
+                // 每次移动都要更新坐标位置
+                oldx = newx,
+                oldy = newy;
+            }
+        }, true);
+        // 弹起
+        c.addEventListener('mouseup', ()=> {
+            onoff = false;
+        },false);
+
+        document.getElementById("export").addEventListener('click', event => {
+            let src = c.toDataURL("image/png");
+            let img = document.createElement("img");
+            img.src = src;
+            document.body.appendChild(img);
+            
+        });
+    </script>
+</body>
+</html>

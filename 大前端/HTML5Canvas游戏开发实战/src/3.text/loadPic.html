@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        /*init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+            console.log("1");
+            let addEventListener = new Promise(function(resolve, reject){
+                let loader = new LLoader();
+                loader.addEventListener(LEvent.COMPLETE, function(event) {
+                    let bitmapdata = new LBitmapData(loader.content);
+                    let bitmap = new LBitmap(bitmapdata);
+                    addChild(bitmap);                
+                    console.log('2');
+                });
+                resolve(loader);
+            })
+            addEventListener.then(function(aLoder){
+                aLoder.load("show.jpg", "bitmapdata");
+                console.log('3');
+            });
+        });*/
+        init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+            let loader = new LLoader();            
+            loader.addEventListener(LEvent.COMPLETE, function(event) {
+                let bitmapdata = new LBitmapData(loader.content);
+                let bitmap = new LBitmap(bitmapdata);
+                addChild(bitmap);                            
+            });
+            // setTimeout(function(){console.log("延迟1ms");}, 1);
+            loader.load("show.jpg", "bitmapData");
+        });
+
+ 
+        
+        // 因为封装，上面的不能使用
+        /*init(50, "legend", 500,350,main);
+        function main(){
+            loader = new LLoader();
+            console.log('1');
+            loader.addEventListener(LEvent.COMPLETE, loadBitmapData);
+            loader.load("show.jpg", "bitmapData");
+            console.log('3');
+        }
+
+        function loadBitmapData(event) {
+            let bitmapdata = new LBitmapData(loader.content);
+            let bitmap = new LBitmap(bitmapdata);
+            addChild(bitmap);
+            console.log('2');
+        }*/
+    </script>
+</body>
+</html>

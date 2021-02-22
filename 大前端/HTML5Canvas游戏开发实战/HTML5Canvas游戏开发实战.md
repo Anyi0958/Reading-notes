@@ -1779,9 +1779,626 @@ ctx.drawImage(img,0,0);
 
 ## 3. 自定义画板
 
+### 思路
+
+1. 鼠标按下，开始描画。鼠标按下事件。
+2. 鼠标弹起，结束描画。鼠标弹起事件。
+3. 鼠标按下移动，路径画线。鼠标移动事件。
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let c = document.getElementById('canvas');
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        let ctx = c.getContext('2d');
+
+        // draw one black board
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,600,300);
+
+        // 按下标记
+        let onoff = false,
+            oldx = -10,
+            oldy = -10;
+
+        // 设置颜色
+        let linecolor = "white";
+
+        // 设置线宽
+        let linw = 4;
+
+        // 添加鼠标事件
+        // 按下
+        c.addEventListener('mousedown', event => {
+            onoff = true;
+            // 位置 - 10是为了矫正位置，把绘图放在鼠标指针的顶端
+            oldx = event.pageX - 10;
+            oldy = event.pageY - 10;
+        },false);
+        // 移动
+        c.addEventListener('mousemove', event => {
+            if(onoff == true){
+                let newx = event.pageX - 10,
+                    newy = event.pageY - 10;
+
+                // 绘图
+                ctx.beginPath();
+                ctx.moveTo(oldx,oldy);
+                ctx.lineTo(newx,newy);
+                ctx.strokeStyle = linecolor;
+                ctx.lineWidth = linw;
+                ctx.lineCap = "round";
+                ctx.stroke();
+			   // 处理完后，坐标更新
+                oldx = newx,
+                oldy = newy;
+            }
+        }, true);
+        // 弹起
+        c.addEventListener('mouseup', ()=> {
+            onoff = false;
+        },false);
+    </script>
+</body>
+</html>
+```
+
+结果展示：
+
+![43-blackBoard][43]
+
+### 代码讲解
+
+整体思路：按下鼠标，触发移动的开关，移动后开始记录线条（用移动后的坐标-移动前的坐标，然后绘线），每次移动都会更新旧坐标。松开鼠标后，释放移动开关。
+
+1. 只有在鼠标按下，才会触发移动绘图的效果，所以需要增加一个状态判断。
+2. 因为鼠标指针和实际位置有一个偏移量，所以在坐标定位的时候，需要增加`pagex-10`从而使坐标位于指针的尖端处。
+3. 每次移动都要更新坐标位置，用小段的线段来模拟不规则的线。
+
+### 更改线条颜色和宽度
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <button id="yellow" style="width: 80px;height: 80px;background-color: yellow;" onclick='linecolor = "yellow";'></button>
+    <button id="red" style="width: 80px;height: 80px;background-color: red;" onclick='linecolor = "red";'></button>
+    <button id="line" style="width: 80px;height: 80px;background-color: black;" onclick='linw = 44;'>44px</button>
+    <script>
+        let c = document.getElementById('canvas');
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        let ctx = c.getContext('2d');
+
+        // draw one black board
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,600,300);
+
+        // 按下标记
+        let onoff = false,
+            oldx = -10,
+            oldy = -10;
+
+        // 设置颜色
+        let linecolor = "white";
+
+        // 设置线宽
+        let linw = 4;
+
+        // 添加鼠标事件
+        // 按下
+        c.addEventListener('mousedown', event => {
+            onoff = true;
+            // 位置 - 10是为了矫正位置，把绘图放在鼠标指针的顶端
+            oldx = event.pageX - 10;
+            oldy = event.pageY - 10;
+        },false);
+        // 移动
+        c.addEventListener('mousemove', event => {
+            if(onoff == true){
+                let newx = event.pageX - 10,
+                    newy = event.pageY - 10;
+
+                // 绘图
+                ctx.beginPath();
+                ctx.moveTo(oldx,oldy);
+                ctx.lineTo(newx,newy);
+                ctx.strokeStyle = linecolor;
+                ctx.lineWidth = linw;
+                ctx.lineCap = "round";
+                ctx.stroke();
+                // 每次移动都要更新坐标位置
+                oldx = newx,
+                oldy = newy;
+            }
+        }, true);
+        // 弹起
+        c.addEventListener('mouseup', ()=> {
+            onoff = false;
+        },false);
+    </script>
+</body>
+</html>
+```
+
+![44-board][44]
+
+### 画布导出功能
+
+- 给画板添加图片导出功能，即复制`canvas`画板的图像，保存为图片格式
+- `canvas.toDataURL("image/png")`
+- <span style="color:red;">如果要保存为图片，需要借助`PHP`或者`ASP`工具</span>
+
+- 常见方式：新建`<img>`标签，然后将复制的`canvas`内容用`<img>`表示出来
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    img<br />
+    <button id="export" style="width: 80px;height: 80px;"></button>
+    <hr />
+    <canvas id="canvas"></canvas>
+    
+    <script>
+        let c = document.getElementById('canvas');
+        c.width = window.innerWidth;
+        c.height = window.innerHeight;
+        let ctx = c.getContext('2d');
+
+        // draw one black board
+        ctx.fillStyle = "black";
+        ctx.fillRect(0,0,600,300);
+
+        // 按下标记
+        let onoff = false,
+            oldx = -10,
+            oldy = -10;
+
+        // 设置颜色
+        let linecolor = "white";
+
+        // 设置线宽
+        let linw = 4;
+
+        // 添加鼠标事件
+        // 按下
+        c.addEventListener('mousedown', event => {
+            onoff = true;
+            // 位置 - 10是为了矫正位置，把绘图放在鼠标指针的顶端
+            oldx = event.pageX - 10;
+            oldy = event.pageY - 10;
+        },false);
+        // 移动
+        c.addEventListener('mousemove', event => {
+            if(onoff == true){
+                let newx = event.pageX - 10,
+                    newy = event.pageY - 10;
+
+                // 绘图
+                ctx.beginPath();
+                ctx.moveTo(oldx,oldy);
+                ctx.lineTo(newx,newy);
+                ctx.strokeStyle = linecolor;
+                ctx.lineWidth = linw;
+                ctx.lineCap = "round";
+                ctx.stroke();
+                // 每次移动都要更新坐标位置
+                oldx = newx,
+                oldy = newy;
+            }
+        }, true);
+        // 弹起
+        c.addEventListener('mouseup', ()=> {
+            onoff = false;
+        },false);
+
+        document.getElementById("export").addEventListener('click', event => {
+            let src = c.toDataURL("image/png");
+            let img = document.createElement("img");
+            img.src = src;
+            document.body.appendChild(img);
+            
+        });
+    </script>
+</body>
+</html>
+```
 
 
 
+![45-export][45]
+
+
+
+# `lufylegend`开源库件
+
+开发游戏时，常见问题：
+1. 各浏览器对`JS`和`HTML`解析不一致，`offsetX`和`layerX`
+2. 手机浏览器和`PC`浏览器的区别，`touch`和`mouse`
+3. 代码易读性
+
+## 推荐阅读
+- [官网](http://lufylegend.com/lufylegend "lufylegend")
+- 代码分为原版和`min`版，分别适合学习和使用
+
+## 1. 工作原理
+
+- 利用`setInterval`对`canvas`周期性重绘，每次先运行`clearRect`
+- 根据浏览器不同判断加载`mouse`还是`touch`
+- 将加载的事件加入框架预先准备的数组中，当点击事件发生的时候，才会调用这个数组里的事件。好处在于，被加载的点击事件只是初始化时的一个，但被储存在数组中的事件可以是多个，就可以给多个对象加载点击事件。
+
+## 使用流程
+
+1. 引入库件
+2. 创建`<div>`
+3. 使用`init`函数初始化工作
+
+### 代码解析
+- `init(speed, divid, width, height, completeFuc, type)`
+  - `speed`：游戏速度设定
+  - `divid`：`canvas`传入此`div`内部
+  - `width,height`：游戏宽高
+  - `completeFunc`：游戏初始化完成后，调用此函数
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.min.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+        });        
+    </script>
+</body>
+</html>
+```
+
+## 图片的加载和显示
+
+加载图片的步骤：
+
+1. `Lloader`类加载图片数据
+2. 读取完的图片数据保存到`LbitmapData`中
+3. 利用`Lbitmap`将图片显示到画板
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.min.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        let loader;
+/*         init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+            loader = new LLoader();
+            console.log("1");
+            loader.addEventListener(LEvent.COMPLETE, function(event) {
+                let bitmapdata = new LBitmapData(loader.content);
+                let bitmap = new LBitmap(bitmapdata);
+                addChild(bitmap);                
+                console.log('2');
+            });
+            loader.load("show.jpg", "bitmapdata");
+            console.log('3');
+        });         */
+        // 因为封装，上面的不能使用
+        init(50, "legend", 500,350,main);
+        function main(){
+            loader = new LLoader();
+            console.log('1');
+            loader.addEventListener(LEvent.COMPLETE, loadBitmapData);
+            loader.load("show.jpg", "bitmapData");
+            console.log('3');
+        }
+
+        function loadBitmapData(event) {
+            let bitmapdata = new LBitmapData(loader.content);
+            let bitmap = new LBitmap(bitmapdata);
+            addChild(bitmap);
+            console.log('2');
+        }
+    </script>
+</body>
+</html>
+```
+- 另一种方式展示：
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        /*init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+            console.log("1");
+            let addEventListener = new Promise(function(resolve, reject){
+                let loader = new LLoader();
+                loader.addEventListener(LEvent.COMPLETE, function(event) {
+                    let bitmapdata = new LBitmapData(loader.content);
+                    let bitmap = new LBitmap(bitmapdata);
+                    addChild(bitmap);                
+                    console.log('2');
+                });
+                resolve(loader);
+            })
+            addEventListener.then(function(aLoder){
+                aLoder.load("show.jpg", "bitmapdata");
+                console.log('3');
+            });
+        });*/
+        init(50, "legend", 500, 350, () => {
+            console.log("lufylegend start.");
+            let loader = new LLoader();            
+            loader.addEventListener(LEvent.COMPLETE, function(event) {
+                let bitmapdata = new LBitmapData(loader.content);
+                let bitmap = new LBitmap(bitmapdata);
+                addChild(bitmap);                            
+            });
+            // setTimeout(function(){console.log("延迟1ms");}, 1);
+            loader.load("show.jpg", "bitmapData");
+        });
+
+ 
+        
+        // 因为封装，上面的不能使用
+        /*init(50, "legend", 500,350,main);
+        function main(){
+            loader = new LLoader();
+            console.log('1');
+            loader.addEventListener(LEvent.COMPLETE, loadBitmapData);
+            loader.load("show.jpg", "bitmapData");
+            console.log('3');
+        }
+
+        function loadBitmapData(event) {
+            let bitmapdata = new LBitmapData(loader.content);
+            let bitmap = new LBitmap(bitmapdata);
+            addChild(bitmap);
+            console.log('2');
+        }*/
+    </script>
+</body>
+</html>
+```
+
+![46-lufylegend][46]
+
+### 代码解析
+
+```javascript
+loader = new LLoader();            
+loader.addEventListener(LEvent.COMPLETE, loadBitmapData);
+loader.load("show.jpg", "bitmapData");
+
+// 类似于
+let image = new Image();
+image.onload = () => {};
+```
+
+- `loader.content`就是一个`image`
+- `LBitmapData`是`lufylegend`库件中的一个类，只是用来保存和读取`Image`对象的，如果需要显示在`canvas`上需要：`let bitmap = new LBitmap(bitmapdata);`，如果要添加对象到`canvas`上需要：`addChild(bitmap);`
+
+## `LBitmapData`对象
+
+- 构造器：`LBitmapData(image,x,y,width,height)`
+- `x,y`：坐标
+- `image`：对象
+- `width,height`：可视范围
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 50,50,150,150);
+                let bitmap = new LBitmap(bitmapdata);
+                addChild(bitmap);
+            });
+            // setTimeout(()=>{console.log("1ms")},1);
+            loader.load("show.jpg", "bitmapData");
+        });
+    </script>
+</body>
+</html>
+```
+
+![47-LBitmapData][47]
+
+## `LBitmap`对象
+
+- 显示图片到`canvas`上，还可以控制图片的各种属性
+- 坐标，透明度，旋转，缩放等
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 50,50,150,150);
+                let bitmap = new LBitmap(bitmapdata);
+                // 图片坐标
+                bitmap.x = 50;
+                bitmap.y = 50;
+                // 旋转60度
+                bitmap.rotate = 60;
+                // 图片透明度设置0.4
+                bitmap.alpha = 0.4;
+                
+                addChild(bitmap);
+            });
+            // setTimeout(()=>{console.log("1ms")},1);
+            loader.load("show.jpg", "bitmapData");
+        });
+    </script>
+</body>
+</html>
+
+```
+
+![48-LBitmap][48]
+
+## 层的概念
+
+- 游戏里，任务在地图上行走、对话等，其实都是图片处理和现实的结果，让不同的图像按照先后顺序显示到屏幕上
+- 图像现实的先后顺序以及位置决定了游戏的界面
+
+- 分层：`LSprite`对象
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 50,50,150,150);
+                let bitmap = new LBitmap(bitmapdata);
+                // 加入层LSprite
+                let layer = new LSprite();                
+                
+                addChild(layer);
+                layer.addChild(bitmap);
+            });
+            // setTimeout(()=>{console.log("1ms")},1);
+            loader.load("show.jpg", "bitmapData");
+        });
+    </script>
+</body>
+</html>
+
+```
+
+- `LSprite`和`LBitmap`一样，可以对坐标、透明度、旋转、缩放进行控制
+- 不过`LSprite`控制的是整个层属性
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 50,50,150,150);
+                let bitmap = new LBitmap(bitmapdata);
+                // 加入层LSprite
+                let layer = new LSprite();                
+                
+                addChild(layer);
+                layer.addChild(bitmap);
+
+                layer.x = 50;
+                layer.y = 50;
+                layer.rotate = 60;
+            });
+            // setTimeout(()=>{console.log("1ms")},1);
+            loader.load("show.jpg", "bitmapData");
+        });
+    </script>
+</body>
+</html>
+
+```
+
+## `LGraphics`对象绘图
+
+- `lufylegend`库件中的一个绘图类，内置了一些函数简化绘图
+- 可以单独使用，也可以与`LSprite`配合使用
+
+### 1. 绘制矩形
+
+- `drawRect(thickness, lineColor, pointArray, isfill, color)`
+  - `thickness`：边框线宽
+  - `pointArray`：矩形范围数组（x,y,long,width）
+  - `isfill`：是否填充
+
+```html
+
+```
 
 
 
@@ -1830,3 +2447,9 @@ ctx.drawImage(img,0,0);
 [40]: ./img/40-reverse.png "40-reverse.png"
 [41]: ./img/41-gray.png "41-gray"
 [42]: ./img/42-shadow.png "42-shadow"
+[43]: ./img/43-blackBoard.png "43-blackBoard"
+[44]:./img/44-board.png "44-board"
+[45]:./img/45-export.png "45-export"
+[46]: ./img/46-lufylegend.png "46-lufylegend"
+[47]: ./img/47-LBitmapData.png "47-LBitmapData"
+[48]:./img/48-LBitmap.png "48-LBitmap"

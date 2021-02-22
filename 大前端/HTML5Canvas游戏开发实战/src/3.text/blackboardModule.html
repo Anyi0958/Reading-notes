@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+<script>
+    class Board{
+        constructor(canvasName = 'canvas', data = new Map([
+            ["onoff", false],
+            ["oldx", -10],
+            ["oldy", -10],
+            ["fillStyle", "black"],
+            ["lineColor", "white"],
+            ["lineWidth", 4],
+            ["lineCap", "round"],
+            ["canvasWidth", window.innerWidth],
+            ["canvasHeight", window.innerHeight]
+        ])){
+            // this.data = data;
+            this.c = document.getElementById(canvasName);
+            this.ctx = this.c.getContext('2d');
+            this.onoff = data.get("onoff");
+            this.oldx = data.get("oldx");
+            this.oldy = data.get("oldy");
+            this.lineColor = data.get("lineColor");
+            this.lineWidth = data.get("lineWidth");
+            this.lineCap = data.get("lineCap");
+
+            this.c.width = data.get("canvasWidth");
+            this.c.height = data.get("canvasHeight");
+
+            this.ctx.fillStyle = data.get("fillStyle");
+            this.ctx.fillRect(0,0,600,300);
+        }
+
+        eventOperation(){
+            // 添加鼠标事件
+            // 按下
+            this.c.addEventListener('mousedown', event => {
+                this.onoff = true;
+                // 位置 - 10是为了矫正位置，把绘图放在鼠标指针的顶端
+                this.oldx = event.pageX - 10;
+                this.oldy = event.pageY - 10;
+            },false);
+            // 移动
+            this.c.addEventListener('mousemove', event => {
+                if(this.onoff == true){
+                    let newx = event.pageX - 10,
+                        newy = event.pageY - 10;
+
+                    // 绘图
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(this.oldx,this.oldy);
+                    this.ctx.lineTo(newx,newy);
+
+                    this.ctx.strokeStyle = this.lineColor;
+                    this.ctx.lineWidth = this.lineWidth;
+                    this.ctx.lineCap = this.lineCap;
+                    
+                    this.ctx.stroke();
+                    // 每次移动都要更新坐标位置
+                    this.oldx = newx,
+                    this.oldy = newy;
+                }
+            }, true);
+            // 弹起
+            this.c.addEventListener('mouseup', ()=> {
+                this.onoff = false;
+            },false);
+        }
+
+    }
+
+    let board = new Board();
+    board.eventOperation();
+</script>
+</body>
+</html>
