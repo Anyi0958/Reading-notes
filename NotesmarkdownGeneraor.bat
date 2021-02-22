@@ -1,13 +1,19 @@
 @echo off && setlocal enabledelayedexpansion
-
+REM set /p "dirpath=path:"
 set /p "filename=filename: "
 
 mkdir "%filename%"
 cd "%filename%"
+mkdir src img
 
-echo %filename% 目录>>%filename%.md
-echo ^[TOC^]>>%filename%.md
-echo ^*^*^*>>%filename%.md
-echo.
-echo ^# 前言>>%filename%.md
-echo.
+echo %filename% 目录>>"%filename%.md"
+echo ^[TOC^]>>"%filename%.md"
+echo ^*^*^*>>"%filename%.md"
+echo.>>"%filename%.md"
+echo ^# 前言>>"%filename%.md"
+echo.>>"%filename%.md"
+echo ^# 推荐阅读>>"%filename%.md"
+echo.>>"%filename%.md"
+echo ^- >>"%filename%.md"
+set "strpath=%cd%"
+start "" /max "%strpath%\%filename%.md"

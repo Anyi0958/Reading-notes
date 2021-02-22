@@ -2397,8 +2397,562 @@ image.onload = () => {};
   - `isfill`：是否填充
 
 ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let graphics = new LGraphics();
+            addChild(graphics);
+            graphics.drawRect(1,'#000000',[50,50,100,100]);
+            graphics.drawRect(1,'#000000',[170,50,100,100],true,'#cccccc');
+        });
+    </script>
+</body>
+</html>
 
 ```
+
+![49-graphics][49]
+
+### 2. 绘制圆
+
+- `drawArc(thickness,linecolor,pointArray,isfull,color)`
+  - `pointArray`：`[x,y,r,start,end,顺时针或逆时针]`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let graphics = new LGraphics();
+            addChild(graphics);
+            graphics.drawArc(1,'#000000',[60,60,50,0,360*Math.PI/180]);
+            graphics.drawArc(1,'#000000',[180,60,50,0,360*Math.PI/10],
+                true,'#cccccc');
+        });
+    </script>
+```
+
+### 3. 绘制多边形
+
+- `drawVertices(thickness,linecolor,vertices,isfill,color)`
+- `vertices`：顶点数组`[[顶点1],[顶点2],[顶点3]...]`
+- <span style="color:red">顶点数组中的顶点个数必须大于等于3</span>
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let graphics = new LGraphics();
+            addChild(graphics);
+            graphics.drawVertices(1,'#000000',
+                [[50,20],[80,20],[100,50],[80,80],[50,80],[30,50]]);
+            graphics.drawVertices(1,'#000000',
+                [[150,20],[180,20],[200,50],[180,80],[150,80],[130,50]],
+                true,'#cccccc');
+        });
+    </script>
+```
+
+## `LGraphics`原始绘图函数
+
+- `LGraphics`对象可以使用`canvas`原始绘图函数进行绘图
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let graphics = new LGraphics();
+            addChild(graphics);
+            graphics.add((coodx,coody)=>{
+                LGlobal.canvas.strokeStyle = '#000000';
+                LGlobal.canvas.moveTo(20,20);
+                LGlobal.canvas.lineTo(200,200);
+                LGlobal.canvas.stroke();
+            });
+        });
+    </script>
+```
+
+## `LSprite`对象绘图
+
+- 每个`LSprite`对象都包含一个`LGraphics`对象，也可以用以上进行实现绘图
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            addChild(layer);
+            layer.graphics.drawRect(1,'#000000',[50,50,100,100]);
+            layer.graphics.drawArc(1,'#000000',[60,60,50,0,360*Math.PI/180],
+                        true, '#cccccc');
+        });
+    </script>
+```
+
+![50-LSpriteArc][50]
+
+## `LGraphics`处理图片
+
+### 1. 圆形区域
+
+- `LGraphics`对象`beginBitmapFill`和`drawArc`结合
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let  loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content);
+                let backLayer = new LSprite();
+                addChild(backLayer);
+                backLayer.graphics.beginBitmapFill(bitmapdata);
+                backLayer.graphics.drawArc(1,'#000000',[60,60,50,0,360*Math.PI/180],
+                        true, '#cccccc');
+            });
+            loader.load('show.jpg', "bitmapData");
+        });
+    </script>
+```
+
+![51-Lsprite][51]
+
+### 2. 矩形区域
+
+- `LGraphics`对象的`beginBitmapFill`和`drawRect`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let  loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content);
+                let backLayer = new LSprite();
+                addChild(backLayer);
+                backLayer.graphics.beginBitmapFill(bitmapdata);
+                backLayer.graphics.drawRect(1,'#000000',
+                    [80,50,70,100]);
+            });
+            loader.load('show.jpg', "bitmapData");
+        });
+    </script>
+```
+
+
+
+### 3. 多边形区域
+
+- `LGraphics`对象的`beginBitmapFill`和`drawVertices`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let  loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content);
+                let backLayer = new LSprite();
+                addChild(backLayer);
+                backLayer.graphics.beginBitmapFill(bitmapdata);
+                backLayer.graphics.drawVertices(1,'#000000',
+                    [[120,50],[100,200],[200,150]]);
+            });
+            loader.load('show.jpg', "bitmapData");
+        });
+    </script>
+
+```
+
+### 4. 扭曲片段
+
+- `LGraphics`对象的`beginBitmapFill`和`drawTriangles`
+
+- `drawTraingles(vertices,indices,uvtData,thickness,color)`
+  - `vertices`：数字构成的矢量`(x,y)`，每个顶点的坐标
+  - `indices`：整数或索引构成的矢量，定义三角形
+  - `uvtData`：纹理映射的标准坐标构成的矢量，每个顶点相对于整张图片的比例和位置
+
+```html
+<div id="legend">Loading...</div>
+    <script>
+        let vertices = new Array();
+        vertices.push(0,0);
+        vertices.push(0,120);
+        vertices.push(0,240);
+        vertices.push(120,0);
+        vertices.push(120,120);
+        vertices.push(120,240);
+        vertices.push(240,0);
+        vertices.push(240,120);
+        vertices.push(240,240);
+
+        let indices = new Array();
+        indices.push(0,3,1);
+        indices.push(3,1,4);
+        indices.push(1,4,2);
+        indices.push(4,2,5);
+        indices.push(3,6,4);
+        indices.push(6,4,7);
+        indices.push(4,7,5);
+        indices.push(7,5,8);
+
+        let uvtData = new Array();
+        uvtData.push(0,0);
+        uvtData.push(0,0.5);
+        uvtData.push(0,1);
+        uvtData.push(0.5,0);
+        uvtData.push(0.5,0.5);
+        uvtData.push(0.5,1);
+        uvtData.push(1,0);
+        uvtData.push(1,0.5);
+        uvtData.push(1,1);
+
+        init(50, "legend", 500, 350, () => {
+            let  loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content);
+                let backLayer = new LSprite();
+                backLayer.x = 100;
+                addChild(backLayer);
+                backLayer.graphics.beginBitmapFill(bitmapdata);
+                backLayer.graphics.drawTriangles(vertices,indices,uvtData);
+            });
+            loader.load('show.jpg', "bitmapData");
+        });
+    </script>
+```
+
+![52-traingles][52]
+
+## 文本
+
+### 1. 文本属性
+
+- 创建的文本框对象不会自动加入可视化对象列表中
+- `addChild()`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            addChild(layer);
+            
+            let field = new LTextField();
+            field.text = 'Hello World';
+            field.x = 50;
+            field.y = 50;
+            field.size = 25;
+            field.color = '#333333';
+            field.weight = "bolder";
+            layer.addChild(field);
+            
+        });
+    </script>
+```
+
+### 2. 输入框
+
+- `LTextField`将文本变成输入框
+- `field.setType(LTextFieldType.INPUT)`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            addChild(layer);
+            
+            let field = new LTextField();
+
+            field.x = 50;
+            field.y = 50;
+            field.setType(LTextFieldType.INPUT);
+
+            layer.addChild(field);
+
+        });
+    </script>
+```
+
+![53-text][53]
+
+## 事件
+
+- 使用`addEventListener`可以为各种事件添加侦听
+
+### 1. 鼠标事件
+
+- `LMouseEvent.MOUSE_DOWN`：按下
+- `LMouseEvent.MOUSE_UP`：弹起
+- `LMouseEvent.MOUSE_MOVE`：移动
+
+- 在手机上分别对应着`TOUCH_START,TOUCH_END,TOUCH_MOVE`
+- 但在`lufylegend`中，不需要分辨，会自动转换
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            layer.graphics.drawRect(1,'#cccccc',[0,0,300,300],true,'#cccccc');
+            addChild(layer);
+            
+            let field = new LTextField();
+            field.text = 'Wait';
+            field.x = 50;
+            field.y = 50;
+            
+            layer.addChild(field);
+
+            layer.addEventListener(LMouseEvent.MOUSE_DOWN, event => {
+                field.text = 'Down';
+            });
+
+            layer.addEventListener(LMouseEvent.MOUSE_UP, event => {
+                field.text = 'up';
+            });
+
+        });
+    </script>
+```
+
+
+
+
+
+### 2. 循环事件
+
+- 重复执行某段代码，需要用到循环事件的侦听
+- 循环：不间断重复地广播某事件
+- `LEvent.ENTER_FRAME`：添加侦听循环事件
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            layer.graphics.drawRect(1,'#cccccc',[0,0,300,300],true,'#cccccc');
+            addChild(layer);
+            
+            let field = new LTextField();
+            field.text = '0';
+            field.x = 50;
+            field.y = 50;
+            
+            layer.addChild(field);
+
+            layer.addEventListener(LEvent.ENTER_FRAME, event => {
+                field.text = parseInt(field.text) + 1;
+            });
+
+        });
+    </script>
+```
+
+### 3. 键盘事件
+
+- `LKeyboardEvent.KEY_DOWN, LKeyboardEvent.KEY_UP, LKeyboardEvent.KEY_PRESS`
+- 键盘事件需要加载到`window`上
+- `LEvent.addEventListener`：加载键盘事件
+- `LGlobal.window`：加载到`window`对象上，侦听整个浏览器窗口
+- `event.keyCode`：按下键的值，根据这个判断游戏的按键
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            layer.graphics.drawRect(1,'#cccccc',[0,0,300,300],true,'#cccccc');
+            addChild(layer);
+            
+            let field = new LTextField();
+            field.text = 'click';
+            field.x = 50;
+            field.y = 50;
+            
+            layer.addChild(field);
+
+            LEvent.addEventListener(LGlobal.window,
+                LKeyboardEvent.KEY_DOWN, event => {
+                field.text = event.keyCode + 'down';
+            });
+
+            LEvent.addEventListener(LGlobal.window,LKeyboardEvent.KEY_UP, event => {
+                field.text = event.keyCode + 'up';
+            });
+        });
+    </script>
+```
+
+## 按钮
+
+- 简化游戏开发，内置`LButton`添加按钮
+- `LButton(DisplayObject_up, DisplayObject_over)`
+  - `DisplayObject_up`：按钮默认`up`状态，鼠标离开的状态
+  - `DisplayObject_over`：当鼠标移动到按钮上的状态
+- 传入按钮的这两个状态对象，可以是`LSprite`和`LBitmap`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapup = new LBitmap(new LBitmapData(loader.content));
+                loader = new LLoader();
+                loader.addEventListener(LEvent.COMPLETE, () => {
+                    let bitmapover = new LBitmap(new LBitmapData(loader.content));
+                    let layer = new LSprite();
+                    addChild(layer);
+
+                    let field = new LTextField();
+                    field.text = 'click';
+                    layer.addChild(field);
+
+                    let button = new LButton(bitmapup, bitmapover);
+                    button.y = 50;
+                    layer.addChild(button);
+                    button.addEventListener(LMouseEvent.MOUSE_DOWN, event => {
+                        field.text = "button click";
+                    });
+                });
+                loader.load("show.jpg", "bitmapData");
+            });
+            loader.load("show.jpg", "bitmapData",20,20);
+            
+        });
+    </script>
+```
+
+## 动画
+
+- 动画是游戏的最基本组成部分
+- 利用`LAnimation`类和循环时间，可以轻松实现一组动画的播放
+- 准备一张照片，包含任务的动作
+
+![54-animation][54]
+
+- `LAnimation(layer,data,list)`
+  - `layer`：`LSprite`对象
+  - `data`：`LBitmapData`对象
+  - `list`：存储坐标的二维数组
+- 数组通过`LGlobal.divideCoordinate(width,height,row,col)`
+  - `width,height`：宽，高
+  - `row,col`：行数，列数
+  - 此函数会将传入的宽高按照行数和列数进行拆分计算，从而得到二维数组
+  - 例如图片为`256x256`，拆分代码`LGlobal.divideCoordinate(256,256,4,4)`
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 0,0,64,64);
+                let list = LGlobal.divideCoordinate(287,287,4,4)
+                
+                let layer = new LSprite();
+                addChild(layer);
+
+                let anime = new LAnimation(layer, bitmapdata, list);
+                layer.addEventListener(LEvent.ENTER_FRAME, () => {
+                    anime.onframe();
+                });
+            });
+            loader.load("animation.png", "bitmapData");
+            
+        });
+    </script>
+```
+
+![55-animation][55]
+
+代码讲解：
+
+- 任务动起来，其实是将第一行图片逐个循环播放
+
+- `LAnimation`类的`onframe()`：将所播放的图片列号加1，在循环事件中播放，就成了动画
+
+- 要实现所有的图片循环播放，需要用到`setAction`
+
+- `setAction(rowIndex, colIndex)`：可以改变图片的行号和列号
+  - `rowIndex`：数组行号
+  - `colIndex`：数组列号
+
+```html
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content, 0,0,64,64);
+                let list = LGlobal.divideCoordinate(287,287,4,4)
+                
+                let layer = new LSprite();
+                addChild(layer);
+
+                let anime = new LAnimation(layer, bitmapdata, list);
+                layer.addEventListener(LEvent.ENTER_FRAME, () => {
+                    let action = anime.getAction();
+                    switch(action[0]) {
+                        case 0:
+                            layer.y += 5;
+                            if(layer.y >= 200)  anime.setAction(2);
+                            break;
+                        case 1:
+                            layer.x -= 5;
+                            if(layer.x <= 0)    anime.setAction(0);
+                            break;
+                        case 2:
+                            layer.x += 5;
+                            if(layer.x >= 200)  anime.setAction(3);
+                            break;
+                        case 3:
+                            layer.y -= 5;
+                            if(layer.y <= 0)    anime.setAction(1);
+                            break;
+                    }
+                    anime.onframe();
+                });
+            });
+            loader.load("animation.png", "bitmapData");
+            
+        });
+    </script>
+```
+
+![56-animation][56]
+
+代码讲解：
+
+- `getAction`取得当前播放动画的行号和列号，返回是个数组
+- $[1,2,3,4]$分别代表着"下，左，右，上"4个方向，然后移动，根据到达的位置改变移动方向
+- `layer.y += 5`：控制着图像移动的节奏和步伐
+- `layer.y >= 350 - 287/2`：则控制着移动的空间，最大公式是:
+
+$$
+canvas高度 - \frac{整体图的高度}{分成的行数} \times 单个图在canvas显示的高度 \times 2
+$$
 
 
 
@@ -2453,3 +3007,12 @@ image.onload = () => {};
 [46]: ./img/46-lufylegend.png "46-lufylegend"
 [47]: ./img/47-LBitmapData.png "47-LBitmapData"
 [48]:./img/48-LBitmap.png "48-LBitmap"
+[49]:./img/49-graphics.png "49-graphics"
+[50]:./img/50-LSpriteArc.png "50-LSpriteArc"
+[51]: ./img/51-Lsprite.png "51-Lsprite"
+[52]: ./img/52-traingles.png "52-traingles"
+[53]:./img/53-text.png "53-text"
+[54]: ./img/animation.png "animation"
+[55]:./img/55-animation.gif "55-animation"
+[56]:./img/56-animation.gif "56-animation"
+

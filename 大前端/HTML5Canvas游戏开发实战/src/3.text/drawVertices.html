@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        init(50, "legend", 500, 350, () => {
+            let graphics = new LGraphics();
+            addChild(graphics);
+            graphics.drawVertices(1,'#000000',
+                [[50,20],[80,20],[100,50],[80,80],[50,80],[30,50]]);
+            graphics.drawVertices(1,'#000000',
+                [[150,20],[180,20],[200,50],[180,80],[150,80],[130,50]],
+                true,'#cccccc');
+        });
+    </script>
+</body>
+</html>
+

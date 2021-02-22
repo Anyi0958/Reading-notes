@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+        let vertices = new Array();
+        vertices.push(0,0);
+        vertices.push(0,120);
+        vertices.push(0,240);
+        vertices.push(120,0);
+        vertices.push(120,120);
+        vertices.push(120,240);
+        vertices.push(240,0);
+        vertices.push(240,120);
+        vertices.push(240,240);
+
+        let indices = new Array();
+        indices.push(0,3,1);
+        indices.push(3,1,4);
+        indices.push(1,4,2);
+        indices.push(4,2,5);
+        indices.push(3,6,4);
+        indices.push(6,4,7);
+        indices.push(4,7,5);
+        indices.push(7,5,8);
+
+        let uvtData = new Array();
+        uvtData.push(0,0);
+        uvtData.push(0,0.5);
+        uvtData.push(0,1);
+        uvtData.push(0.5,0);
+        uvtData.push(0.5,0.5);
+        uvtData.push(0.5,1);
+        uvtData.push(1,0);
+        uvtData.push(1,0.5);
+        uvtData.push(1,1);
+
+        init(50, "legend", 500, 350, () => {
+            let  loader = new LLoader();
+            loader.addEventListener(LEvent.COMPLETE, event => {
+                let bitmapdata = new LBitmapData(loader.content);
+                let backLayer = new LSprite();
+                backLayer.x = 100;
+                addChild(backLayer);
+                backLayer.graphics.beginBitmapFill(bitmapdata);
+                backLayer.graphics.drawTriangles(vertices,indices,uvtData);
+            });
+            loader.load('show.jpg', "bitmapData");
+        });
+    </script>
+</body>
+</html>
+

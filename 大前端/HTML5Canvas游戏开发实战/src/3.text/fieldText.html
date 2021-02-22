@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./lufylegend-1.10.1.js"></script>
+</head>
+<body>
+    <div id="legend">Loading...</div>
+    <script>
+
+        init(50, "legend", 500, 350, () => {
+            let layer = new LSprite();
+            addChild(layer);
+            
+            let field = new LTextField();
+
+            field.x = 50;
+            field.y = 50;
+            field.setType(LTextFieldType.INPUT);
+
+            layer.addChild(field);
+
+        });
+    </script>
+</body>
+</html>
+
