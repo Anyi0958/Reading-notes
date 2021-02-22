@@ -14,3 +14,4 @@ git push origin master
 pause
 git switch dev
 git status
+pause
