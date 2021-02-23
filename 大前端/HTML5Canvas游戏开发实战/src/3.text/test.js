@@ -1,13 +1,16 @@
-const test = `{
-    {"id":1, "name":1},
-    {"id":2, "name":2},
-    {"id":3, "name":3},
-}`;
-let index = 0,
-    arr = Array.from(test);
-arr[0] = '[',
-arr[arr.length - 1] = ']';
+function test(){
+    return new Promise((resolve, reject) => {
+        console.log('fuck');
+        console.log('loading');
+    });
+}
 
-let result = arr.join(" ");
-console.log(JSON.stringify(result));
-console.log(JSON.parse(result));
+test().then(
+    () => {
+        console.log('start');
+    },
+    err => console.log(err)
+).catch(err => {console.log(err)}
+)
+
+async setTimeout()
