@@ -1033,7 +1033,8 @@ for(const int of ints) {
 ### 基本API
 
 - 创建：`const m = new Map();`
-- 初始化值：`const m1 = new Map(["key1", "val1"]);`
+- 初始化值：`const m1 = new Map([["key1", "val1"]]);`
+- 或者：`const m2 = new Map({[Symbol.iterator]:function* (){yield}});`
 - 查看是否存在键值对：`m.has(key);`
 - 获取键对应值：`m.get(key);`
 - 新增设置：`m.set('key2', 'val2');`
@@ -1075,6 +1076,7 @@ const wm = new WeakMap();
 ### 基本API
 - 创建：`const wm = new WeakMap();`
 - 初始化值：`const key1 = {id:1};const wm = new WeakMap([[key1, "val1"], [key2, "val2"]]);`
+- 键必须是`Object`或者是继承自`Object`
 - 查看是否存在：`wm.has(key1)`
 - 获取相应的键值：`wm.get(key1)`
 - 新增：`wm.set(key1, "val1")`
