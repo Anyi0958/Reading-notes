@@ -4171,6 +4171,42 @@ game.backGroundPotray();
 
 
 
+## 俄罗斯方块
+
+- 循环播放事件、键盘事件、触屏事件
+
+### 游戏分析
+
+1. 图片绘画。背景和掉落方块都是图片。
+2. 文字绘制。得分、消除层数、速度。
+3. 循环播放事件。方块自动下落。
+4. 键盘事件。对方块的操作。
+5. 触屏事件。
+6. 层次划分。
+   1. 背景层
+   2. 进度条显示层
+   3. 方块绘制层
+   4. 方块预览层
+
+### 必要知识储备
+
+- 二维数组，又叫矩阵。移动、变形、判定。
+- 常见二维数组声明：
+  - `var matrix = new Array(new Array(0,0), new Array(1,1))`
+  - `var  matrix = [[0,0],[1,1]];`
+- 常用于：游戏中的地图、网格
+
+## 游戏标题画面显示
+
+- `LSprite`对象的`graphics`和`LTextField`
+
+素材：
+
+![65-Teris.png][65]
+
+- `backlayer.die()`：去掉所有的事件监听
+- `removeAllChild()`
+
 
 
 
@@ -4241,3 +4277,4 @@ game.backGroundPotray();
 [62]:./img/62-gameText.png "62-gameText.png"
 [63]:./img/63-judge.png "63-judge"
 [64]:./img/64-game1.png "64-game1"
+[65]: ./img/65-Teris.png "65-Teris.png"
