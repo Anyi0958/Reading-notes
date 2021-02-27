@@ -217,10 +217,74 @@ function plusBox(){
     }
 }
 
+
+
+// 移除方块
 function minusBox(){
     for(let i = 0; i < nowBox.length; i++){
         for(let j = 0;j < nowBox[i].length; j++){
-            if(i)
+            if(i + pointBox.y < 0 ||
+                i + pointBox.y >= map.length ||
+                j + pointBox.x < 0 ||
+                j + pointBox.x >= map[0].length)
+                continue;
+            
+            map[i + pointBox.x][j + pointBox.x] = map[i + pointBox.y][j + pointBox.x] - nowBox[i][j];
+
+            nodeList[i+pointBox.y][j+pointBox.x]['index'] = map[i+pointBox.y][j+pointBox.x] - 1;
         }
     }
 }
+
+// 判断是否可移动
+function checkPlus(nx, ny){
+    // 循环nowBox数组的每个元素
+    for(let i = 0; i < nowBox.length; i++ ){
+        for(let j = 0; j < nowBox[i].length; j++ ){
+            if(i+pointBox.y + ny < 0)
+                // 判断网格是否落入网格范围内
+                continue;
+            else if(i+pointBox.y + ny >= map.length ||
+                    j+pointBox.x + nx < 0 ||
+                    j+pointBox.x + nx >= map[0].length){
+                        // 判断网格超出网格范围
+                        if(nowBox[i][j] == 0)   continue;   // 网格为空继续判断
+                        else    return false;   // 判断网格不为空则代表无法移动
+                    }
+
+            if(nowBox[i][j] > 0 && map[i+pointBox.y + ny][j+pointBox.x + nx] > 0)
+                    return false;   // 判断网格的位置有方块，而将要移动到此位置的当前方块耶不为空，则代表无法移动
+        }
+    }
+
+    return true;
+}
+
+// 绘制所有方块
+function drawMap(){
+    let box1 = 15;
+    for(let i =0; i < map.length; i++){
+        for(let j = 0; j < map[i].length; j++){
+            if(nodeList[i][j]['index'] >= 0)    
+                nodeList[i][j]["bitmap"].bitmapData = bitmapdataList[nodeList[i][j]['index']];
+            else
+                nodeList[i][j]['bitmap'].bitmapData = null;
+        }
+    }
+}
+
+// 游戏结束
+function gameOver(){
+    backLayer.die();
+    let txt = new LTextField();
+
+    txt.color = '#ff0000';
+    txt.size = 40;
+    txt.text = 'Game Over';
+
+    txt.x = (LGlobal.width - txt.getWidth()) * 0.5;
+    txt.y = 200;
+    backLayer.addChild(txt);
+}
+
+// 控制方块移动
