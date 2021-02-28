@@ -24,7 +24,7 @@
 - Promise应用 - 2.12
 - 算法
 - Leetcode
-- Postfix文档
+- Postfix文档 - 完成
 - 面试总结 - 2.2
 - FreeCodeCamp
 - 英语口语与听力 - per day
