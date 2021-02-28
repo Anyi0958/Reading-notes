@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body onload="initial();">
+    <header><h1>websocketTest</h1></header>
+    <article>
+        <input type="button" id="openbtn" value="connect" onclick="doOpen();">
+        <input type="button" id="closebtn" value="disconnect" onclick="doClose();">
+        <hr>
+        <form onsubmit="return doAction();">
+            <table>
+                <tr>
+                    <th>user:</th>
+                    <td>
+                        <input type="text" id="name" size="10">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Message:</th>
+                    <td>
+                        <select id="to">
+                            <option value="all">all</option>
+                        </select>
+                        <br />
+                        <input type="text" id="message" size="40">
+                        <input type="submit" value="send">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </article>
+    <script src="./websocketTest.js"></script>
+</body>
+</html>

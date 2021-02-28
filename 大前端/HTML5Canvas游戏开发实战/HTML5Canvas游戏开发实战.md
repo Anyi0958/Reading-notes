@@ -4218,6 +4218,78 @@ game.backGroundPotray();
 - 触屏事件
 - 游戏层次划分：进度显示条、背景层、人物层、障碍层
 
+## 飞机大战
+
+# 开发网络游戏
+
+- 通信方式：`HTTP`通信，`Socket`通信
+
+- `HTTP`：短链接，客户端发请求，得到回应，释放链接。一个过程为一次链接
+  - 大多页游采用`HTTP`，只是在刷新网页的时候和服务器通信
+
+## `HTTP`通信
+
+- `AJAX`使用`XMLHttpRequest`对象直接与后台服务器进行通信
+- 局部更新时使用，减少传输数据，提高速度
+
+### 服务器端
+
+- 常见后端语言：`JAVA, php`
+
+### 弊端
+
+- 处理即时通信的功能会进行不断通信(轮询)，消耗带宽和资源
+
+## `Socket`通信
+
+- `H5`中定义了`WebSocket`协议，能实现实时通信
+- 套接字的接口，从而区分进程间的网络通信和链接
+- `Socket`是`TCP/IP`上的API
+
+举例：
+
+寄信人 > 邮箱 > 邮局 > 邮递员 > 收件人
+
+客户端 > Socket > 服务器 > Socket > 客户端
+
+### 服务器端
+
+- `WebSocket`
+- `Jetty`：一种`serverlet`容器
+
+### 前端
+
+```js
+let websocket = window.WebSocket || window.MozWebSocket;
+
+let socket = new websocket('ws://localhost:80');
+socket.addEventListener('open', e => {
+
+});
+socket.addEventListener('message', e => {
+    
+});
+socket.addEventListener('error', e => {
+    
+});
+socket.addEventListener('close', e => {
+    
+});
+```
+
+- `open`：接通服务器时，运行方法中的内容
+- `message`：客户端接收到服务器发来的消息时，运行方法中的内容
+- `error`：在客户端和服务器连接过程中，发生异常时运行方法中的内容
+- `close`：在客户端和服务器断开连接时运行
+
+## 坦克世界
+
+# 提高效率分析
+
+- 小数绘图会变慢速度
+- `drawImage`速度快于`putImageData`
+- `png`格式效果更好
+
 
 
 
