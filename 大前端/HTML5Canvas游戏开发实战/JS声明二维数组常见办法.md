@@ -16,7 +16,10 @@ console.log(new Array(20).fill(new Array(10).fill(0)));
 ![0-arr][01]
 
 
-- 此办法将会生成二维数组
+- ~~此办法将会生成二维数组~~
+- 此方法生成的二维数组，纵坐标将会一起改变
+
+![image-20210305020516027](.\img\image-20210305020516027.png)
 
 # `fill`灵活插入
 
@@ -35,4 +38,10 @@ for(let i = 0; i < arr.length; i++)	arr[i] = new Array(10);
 
 ***
 [01]:./img/0-arr.png "0-arr"
+
+# `Array.from`
+
+```js
+Array.from(new Array(n),() => new Array(n).fill(0))
+```
 
