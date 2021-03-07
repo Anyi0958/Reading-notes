@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE svg>
+<svg width="500" height="500" viewBox="0 0 240 240"     xmlns="http://www.w3.org/2000/svg">
+
+<defs>
+<pattern id="tile" x="0" y="0" width="20%" height="20%"
+         patternUnits="objectBoundingBox">
+	<path d="M 0 0 Q 5 20 10 10 T 20 20" 
+          style="stroke:black; fill: none;"/>
+    <path d="M 0 0 h 20 v 20 h -20 z" 
+          style="stroke: gray; fill: none;"/>
+</pattern>
+</defs>
+<rect x="20" y="20" width="100" height="100"
+      style="fill: url(#tile); stroke: black;" />
+</svg>
