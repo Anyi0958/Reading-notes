@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <!--http绝对地址远程加载-->
+<script src="http://www.yanhuangxueyuan.com/3D/example/three.js"></script>
+<script>
+
+let scene = new THREE.Scene();
+var geometry = new THREE.BufferGeometry(); //声明一个空几何体对象
+//类型数组创建顶点位置position数据
+var vertices = new Float32Array([
+  0, 0, 0, //顶点1坐标
+  50, 0, 0, //顶点2坐标
+  0, 100, 0, //顶点3坐标
+
+  0, 0, 0, //顶点4坐标
+  0, 0, 100, //顶点5坐标
+  50, 0, 0, //顶点6坐标
+
+]);
+// 创建属性缓冲区对象
+var attribue = new THREE.BufferAttribute(vertices, 3); //3个为一组
+// 设置几何体attributes属性的位置position属性
+geometry.attributes.position = attribue;
+
+//材质对象
+var material = new THREE.PointsMaterial({
+  // 使用顶点颜色数据渲染模型，不需要再定义color属性
+  // color: 0xff0000,
+  vertexColors: THREE.VertexColors, //以顶点颜色为准
+  size: 10.0 //点对象像素尺寸
+});
+// 点渲染模式  点模型对象Points
+var points = new THREE.Points(geometry, material); //点模型对象
+scene.add(points); //点对象添加到场景
+
+
+    // 网格模型对象Mesh
+    let mesh = new THREE.Mesh(geometry, material);
+    // 位置选择
+    // 球体沿y轴正方向平移120
+
+    // 网格模型添加到场景中
+    scene.add(mesh);
+  
+    // console.log(scene);
+    /* 
+    *   相机设置
+     */
+    // window's width
+    let width = window.innerWidth;
+    // window's height
+    let height = window.innerHeight;
+
+    // 窗口宽高比
+    let k = width / height;
+
+    // 三维场景显示范围控制系数，系数越大，显示的范围越大
+    let s = 200;
+
+    // 创建相机
+    let camera = new THREE.OrthographicCamera(-s * k, s * k, s, -s, 1, 1000);
+    // 设置相机的位置
+    camera.position.set(200, 300, 200);
+    // 设置相机方向，指向的场景对象
+    camera.lookAt(scene.position);
+
+    /* 
+    *   创建渲染器对象
+     */
+    let renderer = new THREE.WebGLRenderer();
+
+    // 设置渲染区域尺寸
+    renderer.setSize(width, height);
+    // 设置背景颜色
+    renderer.setClearColor(0xb9d3ff, 1);
+    // 向body元素中插入canvas对象，并执行渲染操作
+    document.body.appendChild(renderer.domElement);
+    // 执行requestAnimationFrame函数
+    function render(){
+        renderer.render(scene, camera);
+        mesh.rotateY(0.01);
+        requestAnimationFrame(render);
+    }
+    render();
+</script>
+</body>
+</html>

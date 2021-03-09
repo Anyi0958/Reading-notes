@@ -1,5 +1,9 @@
 # 排除所有.开头的隐藏文件
+#files
 .*
+
+#directories
+node_modules/
 
 #不排除
 !.gitignore
