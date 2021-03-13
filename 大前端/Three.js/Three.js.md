@@ -2287,6 +2287,271 @@ scene.add(spotLight);//光对象添加到scene场景中
 |                    |                                                              |
 | 平行光光源辅助对象 | [DirectionalLightHelper](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/helpers/DirectionalLightHelper) |
 
+## 光照计算方法
+
+- `Threejs`在渲染的时候网格模型材质的颜色值`mesh.material.color`和光源的颜色值`light.color`会进行相乘，简单说就是RGB三个分量分别相乘
+- 平行光漫反射简单数学模型：`漫反射光的颜色 = 网格模型材质颜色值 x 光线颜色 x 光线入射角余弦值`
+- 漫反射数学模型RGB分量表示：`(R2,G2,B2) = (R1,G1,B1) x (R0,G0,B0) x cosθ`
+
+```js
+R2 = R1 * R0 * cosθ
+G2 = G1 * G0 * cosθ
+B2 = B1 * B0 * cosθ
+```
+
+## 颜色相乘测试
+
+```js
+// 网格模型材质设置为白色
+var geometry = new THREE.BoxGeometry(100, 100, 100); //
+var material = new THREE.MeshLambertMaterial({
+  color: 0xffffff
+});
+var mesh = new THREE.Mesh(geometry, material);
+scene.add(mesh);
+
+//环境光   环境光颜色RGB成分分别和物体材质颜色RGB成分分别相乘
+var ambient = new THREE.AmbientLight(0x440000);
+scene.add(ambient);//环境光对象添加到scene场景中
+//点光源
+var point = new THREE.PointLight(0xff0000);
+//设置点光源位置  光源对象和模型对象的position属性一样是Vector3对象
+//PointLight的基类是Light  Light的基类是Object3D  点光源对象继承Object3D对象的位置属性position
+point.position.set(400, 200, 300);
+scene.add(point);
+```
+
+# 2. 阴影投影计算
+
+## 平行光投影计算
+
+- `Three.js`物体投影模拟计算主要设置三部分，一个是设置产生投影的模型对象，一个是设置接收投影效果的模型，最后一个是光源对象本身的设置，光源如何产生投影
+
+```js
+var geometry = new THREE.BoxGeometry(40, 100, 40);
+var material = new THREE.MeshLambertMaterial({
+  color: 0x0000ff
+});
+var mesh = new THREE.Mesh(geometry, material);
+// mesh.position.set(0,0,0)
+scene.add(mesh);
+
+// 设置产生投影的网格模型
+mesh.castShadow = true;
+
+
+//创建一个平面几何体作为投影面
+var planeGeometry = new THREE.PlaneGeometry(300, 200);
+var planeMaterial = new THREE.MeshLambertMaterial({
+  color: 0x999999
+});
+// 平面网格模型作为投影面
+var planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+scene.add(planeMesh); //网格模型添加到场景中
+planeMesh.rotateX(-Math.PI / 2); //旋转网格模型
+planeMesh.position.y = -50; //设置网格模型y坐标
+// 设置接收阴影的投影面
+planeMesh.receiveShadow = true;
+
+// 方向光
+var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+// 设置光源位置
+directionalLight.position.set(60, 100, 40);
+scene.add(directionalLight);
+// 设置用于计算阴影的光源对象
+directionalLight.castShadow = true;
+// 设置计算阴影的区域，最好刚好紧密包围在对象周围
+// 计算阴影的区域过大：模糊  过小：看不到或显示不完整
+directionalLight.shadow.camera.near = 0.5;
+directionalLight.shadow.camera.far = 300;
+directionalLight.shadow.camera.left = -50;
+directionalLight.shadow.camera.right = 50;
+directionalLight.shadow.camera.top = 200;
+directionalLight.shadow.camera.bottom = -100;
+// 设置mapSize属性可以使阴影更清晰，不那么模糊
+// directionalLight.shadow.mapSize.set(1024,1024)
+console.log(directionalLight.shadow.camera);
+```
+
+## 聚光光源投影计算代码
+
+```js
+// 聚光光源
+var spotLight = new THREE.SpotLight(0xffffff);
+// 设置聚光光源位置
+spotLight.position.set(50, 90, 50);
+// 设置聚光光源发散角度
+spotLight.angle = Math.PI /6
+scene.add(spotLight); //光对象添加到scene场景中
+// 设置用于计算阴影的光源对象
+spotLight.castShadow = true;
+// 设置计算阴影的区域，注意包裹对象的周围
+spotLight.shadow.camera.near = 1;
+spotLight.shadow.camera.far = 300;
+spotLight.shadow.camera.fov = 20;
+```
+
+## `.castShadow`属性
+
+- `.castShadow`属性值是布尔值，默认false，用来设置一个模型对象是否在光照下产生投影效果
+
+```js
+// 设置产生投影的网格模型
+mesh.castShadow = true;
+```
+
+## `.receiveShadow`属性
+
+- `.receiveShadow`属性值是布尔值，默认false，用来设置一个模型对象是否在光照下接受其它模型的投影效果
+
+```js
+// 设置网格模型planeMesh接收其它模型的阴影(planeMesh作为投影面使用)
+planeMesh.receiveShadow = true;
+```
+
+## 光源`.castShadow`属性
+
+- 如果属性设置为 true， 光源将投射动态阴影
+-  *警告*： 这需要很多计算资源，需要调整以使阴影看起来正确
+- `DirectionalLightShadow`: 默认值false
+
+```js
+// 设置用于计算阴影的光源对象
+directionalLight.castShadow = true;
+// spotLight.castShadow = true;
+```
+
+## 光源`.shadow`属性
+
+- 平行光`DirectionalLight`的`.shadow`属性值是平行光阴影对象`DirectionalLightShadow`，聚光源`SpotLight`的`.shadow`属性值是聚光源阴影对象`SpotLightShadow`
+
+## 阴影对象基类`LightShadow`
+
+- 平行光阴影对象`DirectionalLightShadow`和聚光源阴影对象`SpotLightShadow`两个类的基类是`LightShadow`
+
+## `LightShadow`属性`.camera`
+
+- 观察光源的相机对象. 从光的角度来看，以相机对象的观察位置和方向来判断，其他物体背后的物体将处于阴影中
+
+```js
+// 聚光源设置
+spotLight.shadow.camera.near = 1;
+spotLight.shadow.camera.far = 300;
+spotLight.shadow.camera.fov = 20;
+```
+
+## `LightShadow`属性`.mapSize`
+
+- 定义阴影纹理贴图宽高尺寸的一个二维向量Vector2
+- 较高的值会以计算时间为代价提供更好的阴影质量. 宽高分量值必须是2的幂, 直到给定设备的`WebGLRenderer.capabilities.maxTextureSize`, 尽管宽度和高度不必相同 (例如，(512, 1024)是有效的). 默认值为 ( 512, 512 )
+
+```js
+directionalLight.shadow.mapSize.set(1024,1024)
+```
+
+# 3. 基类`Light`和`Object3D`
+
+![image-20210311110928836](.\img\23-baseObject.png)
+
+## 光源位置属性
+
+- 光源对象继承父类[Object3D](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/core/Object3D)的位置属性`.position`
+- 以点光源[PointLight](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/lights/PointLight) 为例，`PointLight`的基类是[Light](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/lights/Light)，`Light`的基类是[Object3D](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/core/Object3D)，点光源自然继承对象`Object3D`的位置属性`.position`
+
+```js
+var point = new THREE.PointLight(0xffffff);//点光源
+//设置点光源位置  
+//
+//光源对象和模型对象的position属性一样是Vector3对象
+point.position.set(400, 200, 300);
+
+//环境光对象添加到scene场景中
+scene.add(ambient);
+//点光源对象添加到scene场景中
+scene.add(point);
+```
+
+## 光源颜色属性`.color`和强度属性`.intensity`
+
+- 光源颜色属性`.color`默认值是白色`0xffffff`,强度属性`.intensity`默认1.0,光照计算的时候会把两个属性值相乘
+
+```js
+//环境光：颜色设置为`0xffffff`,强度系数设置为0.5
+var ambient = new THREE.AmbientLight(0xffffff,0.5);
+scene.add(ambient);
+```
+
+***
+
+# 1. 组对象[Group](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/objects/Group)、层级模型
+
+```js
+//创建两个网格模型mesh1、mesh2
+var geometry = new THREE.BoxGeometry(20, 20, 20);
+var material = new THREE.MeshLambertMaterial({color: 0x0000ff});
+var group = new THREE.Group();
+var mesh1 = new THREE.Mesh(geometry, material);
+var mesh2 = new THREE.Mesh(geometry, material);
+mesh2.translateX(25);
+//把mesh1型插入到组group中，mesh1作为group的子对象
+group.add(mesh1);
+//把mesh2型插入到组group中，mesh2作为group的子对象
+group.add(mesh2);
+//把group插入到场景中作为场景子对象
+scene.add(group);
+```
+
+- 网格模型mesh1、mesh2作为设置为父对象group的子对象，如果父对象group进行旋转、缩放、平移变换，子对象同样跟着变换，就像你的头旋转了，眼睛会跟着头旋转
+
+```js
+//沿着Y轴平移mesh1和mesh2的父对象，mesh1和mesh2跟着平移
+group.translateY(100);
+
+//父对象缩放，子对象跟着缩放
+group.scale.set(4,4,4);
+
+//父对象旋转，子对象跟着旋转
+group.rotateY(Math.PI/6)
+```
+
+## 查看子对象`.children`
+
+```js
+console.log('查看group的子对象',group.children);
+```
+
+## 场景对象结构
+
+- 执行`console.log(scene.children)`你在浏览器控制台查看场景对象Scene的子对象，除了可以看到案例代码通过`add`方法添加的组对象group之外，还可以看到通过`add`方法插入到场景中的环境光`AmbientLight`、点光源`PointLight`、辅助坐标对象`AxesHelper`等子对象
+
+```js
+console.log('查看Scene的子对象',scene.children);
+```
+
+## `.add`方法
+
+场景对象`Scene`、组对象`Group`、网格模型对象`Mesh`、光源对象`Light`的`.add()`方法都是继承自它们共同的基类[Object3D](http://www.yanhuangxueyuan.com/threejs/docs/index.html#api/zh/core/Object3D)。
+
+父对象执行`.add()`方法的本质就是把参数中的子对象添加到自身的子对象属性`.children`中。
+
+`.add()`方法可以单独插入一个对象，也可以同时插入多个子对象。
+
+```js
+group.add(mesh1);
+group.add(mesh2);
+
+group.add(mesh1,mesh2);
+```
+
+## `remove`方法
+
+```js
+// 删除父对象group的子对象网格模型mesh1
+group.add(mesh1)
+// 一次删除场景中多个对象
+scene.remove(light,group)
+```
+
 
 
 
