@@ -1,0 +1,29 @@
+body{
+    background: url("images/beijng.jpg");
+    margin: 0 auto;
+}
+#back{
+    width: 600px;
+    height: 600px;
+    background: #36d760;
+    margin: 0 auto;
+    margin-top: 207px;
+}
+#back>div{
+    width: 100px;
+    height: 100px;
+    background: green;
+    float: left;
+    border: 1px solid #36d760;
+    box-sizing: border-box;
+}
+.cover{
+    width: 100px;
+    height: 100px;
+    background: url("images/cover.jpg");
+    list-style: none;
+    border: 1px solid #36d760;
+    box-sizing: border-box;
+    margin: 0 auto;
+    vertical-align: middle;
+}

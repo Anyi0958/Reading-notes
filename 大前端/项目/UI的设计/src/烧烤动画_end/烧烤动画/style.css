@@ -1,0 +1,382 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+.Barbecue{
+    width: 40px;
+    height: 40px;
+    background: #333333;
+    margin: 245px auto;
+    border-radius: 50%/20% 70%;
+    box-shadow: 
+                45px 35px 0 0 #333333,
+                -50px 45px 0 0 #333333,
+                30px -50px 0 0 #333333,
+                -55px -85px 0 0 #333333,
+                -85px -30px 0 0 #333333,
+                -95px 20px 0 0 #333333,
+                90px 12px 0 0 #333333,
+                -20px 105px 0 0 #333333,
+                25px 90px 0 0 #333333,
+                5px -100px 0 0 #333333,
+                80px -60px 0 0 #333333,
+                78px 80px 0 0 #333333,
+                0 0 0 120px #c33,0 0 0 140px #333;
+    position: relative;
+}
+.Barbecue::before{
+    content: "";
+    width: 5px;
+    height: 300px;
+    background: #999999;
+    top: -130px;
+    left: -117px;
+    box-shadow: 
+                18px 0 0 0 #999999,
+                36px 0 0 0 #999999,
+                54px 0 0 0 #999999,
+                72px 0 0 0 #999999,
+                90px 0 0 0 #999999,
+                108px 0 0 0 #999999,
+                124px 0 0 0 #999999,
+                142px 0 0 0 #999999,
+                160px 0 0 0 #999999,
+                178px 0 0 0 #999999,
+                196px 0 0 0 #999999,
+                214px 0 0 0 #999999,
+                232px 0 0 0 #999999,
+                250px 0 0 0 #999999,
+                268px 0 0 0 #999999;
+
+    position: absolute;
+}
+.Barbecue::after{
+    content: "";
+    width: 5px;
+    height: 300px;
+    background: #999999;
+    top: -130px;
+    left: -117px;
+    box-shadow: 
+                18px 0 0 0 #999999,
+                36px 0 0 0 #999999,
+                54px 0 0 0 #999999,
+                72px 0 0 0 #999999,
+                90px 0 0 0 #999999,
+                108px 0 0 0 #999999,
+                124px 0 0 0 #999999,
+                142px 0 0 0 #999999,
+                160px 0 0 0 #999999,
+                178px 0 0 0 #999999,
+                196px 0 0 0 #999999,
+                214px 0 0 0 #999999,
+                232px 0 0 0 #999999,
+                250px 0 0 0 #999999,
+                268px 0 0 0 #999999;
+    transform: rotate(90deg);
+    top: -265px;
+    left: 16px;
+
+    position: absolute;
+}
+.Barbecue .meat{
+    width: 80px;
+    height: 80px;
+    background: #b45227;
+    position: absolute;
+    z-index: 1;
+    border-radius: 50%/30% 70% 25% 50%;
+    border: 6px solid rgba(255, 255, 255, 0.3);
+    box-sizing: border-box;
+    top: 30px;
+    left: 45px;
+}
+.Barbecue .meat::before{
+    content: "";
+    width: 4px;
+    height: 40px;
+    background: rgba(33, 33, 33, 0.2);
+    border-radius: 45%;
+    top: 14px;
+    left: 30px;
+    box-shadow: -12px 0 rgba(33, 33, 33, 0.2),
+                 12px 0 rgba(33, 33, 33, 0.2);
+
+    position: absolute;
+    transform: rotate(30deg);
+}
+.Barbecue .meat::after{
+    content: "";
+    width: 4px;
+    height: 40px;
+    background: rgba(33, 33, 33, 0.2);
+    border-radius: 45%;
+    top: 14px;
+    left: 30px;
+    box-shadow: -12px 0 rgba(33, 33, 33, 0.2),
+                 12px 0 rgba(33, 33, 33, 0.2);
+
+    position: absolute;
+    transform: rotate(-60deg);
+}
+.sausage{
+    width: 25px;
+    height: 100px;
+    background: #a00;
+    position: absolute;
+    z-index: 1;
+    border-radius: 10px;
+    box-shadow: -6px 0 8px 0 rgba(92, 0, 0, 0.8) inset,
+                 2px 0 2px 0 rgba(33, 33, 33, 0.5);
+    top: 20px;
+    left: -45px;
+}
+.sausage::before{
+    content: "";
+    width: 5px;
+    height: 30px;
+    background: #f2e6ca;
+    top: 100%;
+    left:calc(50% - 2.5px);
+    border-radius: 0 0 2px 2px;
+    box-shadow: -1px 2px 2px 0 rgba(33, 33, 33, 0.5) inset;
+
+    position: absolute;
+}
+.sausage::after{
+    content: "";
+    width: 55%;
+    height: 7px;
+    background: #632121;
+    border-radius: 0 25px 25px 0;
+    box-shadow: 1px -1px 0 1px rgba(33, 0, 0, 0.7),
+                0 22px 0 0 #632121,1px 21px 0 1px rgba(33, 0, 0, 0.7),
+                0 44px 0 0 #632121,1px 43px 0 1px rgba(33, 0, 0, 0.7);
+    position: absolute;
+    top: 20px;
+}
+.Barbecue .corn{
+    width: 35px;
+    height: 100px;
+    background: #F2D204;
+    position: absolute;
+    z-index: 1;
+    border-radius: 9px;
+    top: 20px;
+}
+.Barbecue .corn::before{
+    content: "";
+    width: 5px;
+    height: 30px;
+    background: #f2e6ca;
+    top: 100%;
+    left:calc(50% - 2.5px);
+    border-radius: 0 0 2px 2px;
+    box-shadow: -1px 2px 2px 0 rgba(33, 33, 33, 0.5) inset;
+
+    position: absolute;
+}
+.Barbecue .corn::after{
+    content: "";
+    width: 22%;
+    height: 6%;
+    border-radius: 2px;
+    box-shadow: 
+                0 0 0 #F2D204,1px 1px 0 rgba(33, 33, 33, 0.3),8px 0 0 #F2D204,9px 1px 0 rgba(255, 255, 255, 0.5),16px 0 0 #F2D204, 17px 1px 0 rgba(255, 255, 255, 0.5),24px 0 0 #F2D204,25px 1px 0 rgba(33, 33, 33, 0.2),
+                0 8px 0 #F2D204,1px 9px 0 rgba(33, 33, 33, 0.3),8px 8px 0 #F2D204,9px 9px 0 rgba(255, 255, 255, 0.5),16px 8px 0 #F2D204, 17px 9px 0 rgba(255, 255, 255, 0.5),24px 8px 0 #F2D204,25px 9px 0 rgba(33, 33, 33, 0.2),
+                0 16px 0 #F2D204,1px 17px 0 rgba(33, 33, 33, 0.3),8px 16px 0 #F2D204,9px 17px 0 rgba(255, 255, 255, 0.5),16px 16px 0 #F2D204, 17px 17px 0 rgba(255, 255, 255, 0.5),24px 16px 0 #F2D204,25px 17px 0 rgba(33, 33, 33, 0.2),
+                0 24px 0 #F2D204,1px 25px 0 rgba(33, 33, 33, 0.3),8px 24px 0 #F2D204,9px 25px 0 rgba(255, 255, 255, 0.5),16px 24px 0 #F2D204, 17px 25px 0 rgba(255, 255, 255, 0.5),24px 24px 0 #F2D204,25px 25px 0 rgba(33, 33, 33, 0.2),
+                0 32px 0 #F2D204,1px 33px 0 rgba(33, 33, 33, 0.3),8px 32px 0 #F2D204,9px 33px 0 rgba(255, 255, 255, 0.5),16px 32px 0 #F2D204, 17px 33px 0 rgba(255, 255, 255, 0.5),24px 32px 0 #F2D204,25px 33px 0 rgba(33, 33, 33, 0.2),
+                0 40px 0 #F2D204,1px 41px 0 rgba(33, 33, 33, 0.3),8px 40px 0 #F2D204,9px 41px 0 rgba(255, 255, 255, 0.5),16px 40px 0 #F2D204, 17px 41px 0 rgba(255, 255, 255, 0.5),24px 40px 0 #F2D204,25px 41px 0 rgba(33, 33, 33, 0.2),
+                0 48px 0 #F2D204,1px 49px 0 rgba(33, 33, 33, 0.3),8px 48px 0 #F2D204,9px 49px 0 rgba(255, 255, 255, 0.5),16px 48px 0 #F2D204, 17px 49px 0 rgba(255, 255, 255, 0.5),24px 48px 0 #F2D204,25px 49px 0 rgba(33, 33, 33, 0.2),
+                0 56px 0 #F2D204,1px 57px 0 rgba(33, 33, 33, 0.3),8px 56px 0 #F2D204,9px 57px 0 rgba(255, 255, 255, 0.5),16px 56px 0 #F2D204, 17px 57px 0 rgba(255, 255, 255, 0.5),24px 56px 0 #F2D204,25px 57px 0 rgba(33, 33, 33, 0.2),
+                0 64px 0 #F2D204,1px 65px 0 rgba(33, 33, 33, 0.3),8px 64px 0 #F2D204,9px 65px 0 rgba(255, 255, 255, 0.5),16px 64px 0 #F2D204, 17px 65px 0 rgba(255, 255, 255, 0.5),24px 64px 0 #F2D204,25px 65px 0 rgba(33, 33, 33, 0.2),
+                0 72px 0 #F2D204,1px 73px 0 rgba(33, 33, 33, 0.3),8px 72px 0 #F2D204,9px 73px 0 rgba(255, 255, 255, 0.5),16px 72px 0 #F2D204, 17px 73px 0 rgba(255, 255, 255, 0.5),24px 72px 0 #F2D204,25px 73px 0 rgba(33, 33, 33, 0.2),
+                0 80px 0 #F2D204,1px 81px 0 rgba(33, 33, 33, 0.3),8px 80px 0 #F2D204,9px 81px 0 rgba(255, 255, 255, 0.5),16px 80px 0 #F2D204, 17px 81px 0 rgba(255, 255, 255, 0.5),24px 80px 0 #F2D204,25px 81px 0 rgba(33, 33, 33, 0.2),
+                0 88px 0 #F2D204,1px 89px 0 rgba(33, 33, 33, 0.3),8px 88px 0 #F2D204,9px 89px 0 rgba(255, 255, 255, 0.5),16px 88px 0 #F2D204, 17px 89px 0 rgba(255, 255, 255, 0.5),24px 88px 0 #F2D204,25px 89px 0 rgba(33, 33, 33, 0.2);
+    opacity: 0.5;
+    top: 2px;
+    position: absolute;
+}
+.Barbecue .tallbamboo{
+    width: 25px;
+    height: 170px;
+    background-image: linear-gradient(to top,#ffffff 0%,#96c56f 30%);
+    position: absolute;
+    z-index: 1;
+    top: -10px;
+    left: -90px;
+    border-radius: 70%/60% 10% 0 0;
+}
+.Barbecue .tallbamboo::before{
+    content: "";
+    width: 16px;
+    height: 70%;
+    background: linear-gradient(to top,rgba(0,0,0,0) 0%,#428c42 50%);
+    border-radius: 35% 15% 0 0/70% 30% 0 0;
+    top: -5px;
+    right: 0;
+
+    position: absolute;
+}
+.Barbecue .shrimp{
+    width: 86px;
+    height: 70px;
+    /* background: blue; */
+    position: absolute;
+    z-index: 1;
+    background-image: radial-gradient(circle at center right,
+                      rgba(0,0,0,0) 67%,
+                      #cc4a04 68%,
+                      #ef6921 75%,
+                      #ef6921 85%,
+                      rgba(33,33,33,0.2),
+                      rgba(0,0,0,0) 90%);
+    border-radius: 60%/30% 40% 10% 70%;
+    top: -75px;
+    left: -10px;
+}
+.Barbecue .shrimp::before{
+    content: "";
+    width: 18px;
+    height: 45px;
+    background: #ef6921;
+    /* background: red; */
+    transform: rotate(25deg);
+    top: -24px;
+    left: 15px;
+    box-shadow: 1px -35px 0 -7px #ef6921,0 -36px 1px -7px rgba(33, 33, 33, 0.2),
+                5px -23px 0 -8px #ef6921,5px -23px 1px -7px rgba(33, 33, 33, 0.2),
+                -2px 1px 2px rgba(33, 33, 33, 0.2);
+    border-radius: 85% 85% 50% 50%/120% 120% 50% 50%;
+    border-bottom: 2px solid rgb(234,140,90);
+    box-sizing: border-box;
+    position: absolute;
+}
+.Barbecue .shrimp::after{
+    content: "";
+    width: 22px;
+    height: 22px;
+    /* background: #000; */
+    background-image: radial-gradient(circle at top center,#ef6921 28%,#cc4a04 35%,rgba(0,0,0,0) 36%),
+                      radial-gradient(circle at left center,#ef6921 28%,#cc4a04 35%,rgba(0,0,0,0) 36%);
+    top: 60px;
+    left: 25px;
+    border-radius: 50%;
+    box-shadow:  -13px -85px 0 -9px #7f7f7f,-14px -85px 0 -7px #212121;
+    position: absolute;
+}
+.Barbecue .clam{
+    width: 40px;
+    height: 40px;
+    /* background: blue; */
+    position: absolute;
+    z-index: 1;
+    left: -80px;
+    top: -105px;
+    background-image: radial-gradient(circle at top right,
+                                        #c8c8c8 22%,
+                                        #827909 30%,
+                                        #212121 35%,
+                                        #212121 50%,
+                                        #665a07 65%,
+                                        #827909 72%,
+                                        #665a07 75%);
+    border-radius: 10px 30px 10px 50px;
+}
+.Barbecue .clam::before{
+    content: "";
+    width: 40px;
+    height: 40px;
+    /* background: blue; */
+    position: absolute;
+    z-index: 1;
+    left: 22px;
+    top: 58px;
+    background-image: radial-gradient(circle at top right,
+                                        #c8c8c8 22%,
+                                        #827909 30%,
+                                        #212121 35%,
+                                        #212121 50%,
+                                        #665a07 65%,
+                                        #827909 72%,
+                                        #665a07 75%);
+    border-radius: 10px 30px 10px 50px;
+ }
+ .Barbecue .dried-tofu{
+     width: 5px;
+     height: 120px;
+     background: #f2e6ca;
+     position: absolute;
+     z-index: 1;
+     top: -105px;
+     left: 90px;
+     border-radius: 2px;
+     box-shadow: -1px 2px 2px 0 rgba(33, 33, 33, 0.5) inset;
+ }
+ .Barbecue .dried-tofu::before{
+     content: "";
+     width: 50px;
+     height: 35px;
+     background: #82491d;
+     box-shadow: 2px 2px 1px rgba(255, 255, 255, 0.3) inset,
+                 0 0 3px rgba(255, 255, 255, 0.3);
+     border-radius: 30% 40%/10% 20%;
+     bottom: 8px;
+     left: calc(-25px + 50%);
+     position: absolute;
+ }
+ .Barbecue .dried-tofu::after{
+    content: "";
+    width: 50px;
+    height: 35px;
+    background: #82491d;
+    box-shadow: 2px 2px 1px rgba(255, 255, 255, 0.3) inset,
+                0 0 3px rgba(255, 255, 255, 0.3);
+    border-radius: 30% 40%/10% 20%;
+    bottom: 50px;
+    left: calc(-25px + 50%);
+    position: absolute;
+}
+.Barbecue .smoke{
+    width: 100px;
+    height: 60px;
+    /* background: #ffffff; */
+    position: absolute;
+    z-index: 1;
+    top: -40px;
+    left: 15px;
+    background-image: radial-gradient(ellipse at center center,
+                                        rgba(33,33,33,0.3) 0%,
+                                        rgba(0,0,0,0) 55%);
+    border-radius: 50%;
+    animation: smokemove 5s ease-in-out infinite;
+}
+.Barbecue .smoke::before{
+    content:"";
+    width: 100px;
+    height: 60px;
+    /* background: #ffffff; */
+    position: absolute;
+    z-index: 1;
+    top: -86px;
+    left: 15px;
+    background-image: radial-gradient(ellipse at center center,
+                                        rgba(33,33,33,0.3) 0%,
+                                        rgba(0,0,0,0) 55%);
+    border-radius: 50%;
+    transform: scale(1.6);
+}
+@keyframes smokemove{
+    0%{
+        transform: scale(0.2) translateY(0);
+        opacity: 0;
+    }
+    35%{
+        opacity: 1;
+    }
+    100%{
+        transform: scale(1) translateY(-200px);
+        opacity: 0;
+    }
+}

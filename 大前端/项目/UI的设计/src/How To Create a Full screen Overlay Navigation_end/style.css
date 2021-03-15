@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css?family=Teko:300,400,500,600,700&display=swap');
+*
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Teko', sans-serif;
+}
+body
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+}
+.menuIcon
+{
+	position: fixed;
+	top: 20px;
+	right: 20px;
+	width: 60px;
+	height: 60px;
+	background: #fff url(menu.png);
+	background-size: 40px;
+	background-position: 10px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+.menuIcon.active
+{
+	background: #fff url(close.png);
+	background-size: 40px;
+	background-position: 10px;
+	background-repeat: no-repeat;
+}
+.fullPageMenu
+{
+	position: fixed;
+	top: -100%;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	background: #111;
+	transition: 0.5s;
+}
+.fullPageMenu.active
+{
+	top: 0;
+}
+.banner
+{
+	position: relative;
+	min-width: 600px;
+	height: 100%;
+}
+.banner img
+{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+.fullPageMenu .nav
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	height: 100%;
+	overflow-y: auto;
+}
+ul
+{
+	position: relative;
+}
+ul li
+{
+	position: relative;
+	list-style: none;
+	padding: 0 20px;
+	margin: 5px 0;
+	display: table;
+	overflow: hidden;
+}
+ul li:before
+{
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: #ff0047;
+	transition: transform 0.5s ease-in-out;
+	transform: scaleY(0);
+	transform-origin: bottom;
+}
+ul li:hover:before
+{
+	transition: transform 0.5s ease-in-out;
+	transform: scaleY(1);
+	transform-origin: top;
+}
+ul li a
+{
+	position: relative;
+	color: #fff;
+	text-decoration: none;
+	font-size: 4em;
+	font-weight: 700;
+	line-height: 1em;
+	padding-top: 12px;
+	display: inline-block;
+	text-transform: uppercase;
+	transition: 0.5s ease-in-out;
+}
+ul li a:before
+{
+	content: attr(data-text);
+	position: absolute;
+	bottom: -100%;
+	left: 0;
+	color: #fff;
+}
+ul li:hover a
+{
+	transform: translateY(-100%);
+	color: #fff;
+}
+@media (max-width: 991px)
+{
+	.banner
+	{
+		display: none;
+	}
+}

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resposnive Menu</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="fullPageMenu" id="nav">
+		<div class="banner">
+			<img src="bg.jpg">
+		</div>
+		<div class="nav">
+			<ul>
+				<li><a href="#" data-text="Home">Home</a></li>
+				<li><a href="#" data-text="About">About</a></li>
+				<li><a href="#" data-text="Services">Services</a></li>
+				<li><a href="#" data-text="Portfolio">Portfolio</a></li>
+				<li><a href="#" data-text="Team">Team</a></li>
+				<li><a href="#" data-text="Contact">Contact</a></li>
+			</ul>
+		</div>
+	</div>
+	<span class="menuIcon" id="toggle"  onclick="menuToggle()"></span>
+	<script type="text/javascript">
+		function menuToggle() {
+		   var nav = document.getElementById("nav");
+		   var toggle = document.getElementById("toggle");
+		   nav.classList.toggle("active");
+		   toggle.classList.toggle("active");
+		}
+	</script>
+</body>
+</html>

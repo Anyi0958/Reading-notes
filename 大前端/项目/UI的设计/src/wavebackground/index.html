@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>wavify</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<!-- Plugin Url >Link In Video Description<-->
+	<!-- https://github.com/peacepostman/wavify -->
+	<section>
+		<h2>Wavy Background</h2>
+		<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg"><defs></defs><path id="myID" d=""/></svg>
+	</section>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+	<script src="wavify.js"></script>
+	<script src="jquery.wavify.js"></script>
+	<script type="text/javascript">
+		var myWave = $('#myID').wavify({
+		  height: 550,
+		  bones: 6,
+		  amplitude: 80,
+		  color: '#308aff',
+		  speed: .25
+		});
+	</script>
+</body>
+</html>

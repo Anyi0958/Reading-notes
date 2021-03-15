@@ -1,0 +1,164 @@
+.container-fluid {
+    max-width: 960px;
+}
+
+
+#header {
+    position: absolute;
+    top:0;
+    left: 0;
+    right: 0;
+    display: block;
+    padding-top: 25px;
+    padding-bottom: 15px;
+    
+}
+
+#logo-wrapper {
+    display: block;
+    width: 40px;
+    height: auto;
+    margin-right: -40px;
+    float: left;
+}
+
+
+#logo-wrapper img {
+    width: 100%;
+    height: auto;
+}
+
+#menu-toggle {
+    width: 30px;
+    height: 20px;
+    margin-left: -30px;
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    
+}
+
+#menu-toggle .bar {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: #fff;
+    margin-bottom: 5px;
+    transition: all 4s ease;
+}
+
+#menu-toggle .bar:last-child {
+    margin-bottom: 0;
+}
+
+#menu-toggle .bar.short {
+    width: 60%;
+    margin-left: auto;
+    margin-right:auto;
+
+}
+
+#menu-toggle:hover .bar .short {
+    width: 100%;
+}
+
+
+
+#main-menu {
+    display: block;
+    margin: 12px 40px 0 40px;
+
+    list-style: none;
+    text-align: center;
+    font-size: 16px;
+    font-family: 'Exo', sans-serif;
+    padding: 0;
+
+    float: left;
+    width: calc(100% - 80px);
+}
+
+#main-menu li {
+    display: inline-block;
+    margin-right: 40px;
+}
+
+#main-menu li:last-child {
+    margin-right: 0;
+}
+
+#main-menu li a{
+    color: #d9d9d9;
+}
+
+
+
+
+
+#page-banner {
+    min-height: 10vh;
+    background-image: url('mountains-4933524_1920.jpg');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center center;
+}
+
+
+.page-banner-text-wrapper {
+    position: absolute;
+    top: 50%;
+    display: block;
+    width: 100%;
+    transform: translateY(-50%);
+}
+
+.page-banner-text-wrapper img {
+    display: block;
+    margin:0 auto;
+}
+
+.inner-text-wrapper {
+    position: absolute;
+    top:50%;
+    display: block;
+    width: 100%;
+    transform: translateY(-50%);
+    text-align: center;
+    color: #fff;
+    font-family: 'Copperplate', serif;
+}
+
+.banner-title {
+    margin: 0 15px;
+    opacity: 0;
+    transition: all 3s ease;
+}
+
+.banner-subtitle {
+    margin:0 15px;
+    opacity: 0;
+    transition: all .3s ease;
+}
+
+.inner-text-wrapper.expanded .banner-title {
+    opacity: 1;
+    font-size: 55px;
+    letter-spacing: 30px;
+    font-weight: 300;
+}
+
+.inner-text-wrapper.expanded .banner-subtitle {
+    opacity: 1;
+}
+
+
+.down-arrow {
+    display: block;
+    width: 40px;
+    height: auto;
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateY(-50%);
+}

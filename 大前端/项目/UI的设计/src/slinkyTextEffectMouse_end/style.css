@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800&display=swap');
+*
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Open Sans', sans-serif;
+}
+body
+{
+	width: 100%;
+	min-height: 100vh;
+	overflow: hidden;
+}
+.text
+{
+	position: absolute;
+	transform: translate(-50%,-50%);
+	pointer-events: none;
+	color: #fff;
+	font-size: 10em;
+	font-weight: 800;
+	text-transform: uppercase;
+	-webkit-text-stroke: 2px #000;
+}

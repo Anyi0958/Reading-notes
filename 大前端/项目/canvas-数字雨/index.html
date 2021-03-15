@@ -1,0 +1,61 @@
+ <!DOCTYPE html>
+ <html lang="en">
+ <head>
+	 <meta charset="UTF-8">
+	 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	 <title>Document</title>
+ </head>
+ <body>
+
+	<!-- 思路：
+	
+		1.创建画布，并在画布上创建文字。
+		2.将文字流分列布局，并且放入数组中。
+		3.将随机生成的文字利用数组的forEach(index--x坐标，value--y坐标)，在画布中不断变化位置。
+		4.利用周期调用，来实现文字的位置变化。
+	-->
+
+<canvas id="c" width="2000" height="1000"></canvas>
+
+<script>
+	// 对画布的大小进行修改
+	document.getElementById("c").width = document.body.clientWidth || document.documentElement.clientWidth;
+	document.getElementById("c").height = document.body.clientHeight - 110 || document.documentElement.clientHeight - 110;
+
+	// 返回画布
+	let pen = document.getElementById("c").getContext('2d');
+	//创建动态size数组，固定值0替换为数组；
+	// 数组的size就是文字流的列数，值就是纵坐标；
+	let ys = Array(parseInt(document.getElementById("c").width/10)).fill(0);
+	// 随机字符
+	let random_char = () => {
+		// 受一个指定的 Unicode 值，然后返回一个字符串
+		return String.fromCharCode(65 + parseInt(Math.random() * (90 - 65) ))
+	};
+
+	// 按照指定的周期（以毫秒计）来调用函数或计算表达式。
+	setInterval( () => {
+		// 画布的填充颜色
+		pen.fillStyle = "rgba(0, 0, 0, 0.09)";
+
+		// 填充形状
+		pen.fillRect(0,0, c.width, c.height);
+
+		// 填充文本颜色
+		pen.fillStyle = "#0f0";
+
+		ys.forEach((y,i) => {
+			// 每次x坐标乘10，向右移动；
+			// 每次y坐标不动，或者向下加10；
+			// 绘制填色的文本（内容，x坐标，y坐标）
+			// i乘的数必须和上面的均分相同，如果小于上面的均分，就会只有半截；如果大于均分宽度，就会出现超出去的情况；
+			pen.fillText(random_char(), i * 10, y);
+			// 对纵坐标的变换
+			ys[i] = Math.random() < 0.02 ? 0 : y + 10;
+		});
+	}, 1000/20);
+	
+</script>
+	 
+ </body>
+ </html>

@@ -1,0 +1,43 @@
+*
+{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	background-color:black;
+}
+body
+{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh;
+}
+.container
+{
+	position: relative;
+	width: 900px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.pixel
+{
+	position: relative;
+	width: 400px;
+	height: 400px;
+}
+.pixel img
+{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	image-rendering: pixelated;
+}
+.pixel img:last-child
+{
+	transition: 2s;
+}
+.pixel:hover img:last-child
+{
+	opacity: 0;
+}

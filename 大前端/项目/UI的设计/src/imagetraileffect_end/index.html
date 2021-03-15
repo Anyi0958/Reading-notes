@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image Trail Mousemove</title>
+<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+	<div class="imgBx"><img src="1.jpg"></div>
+	<div class="imgBx"><img src="2.jpg"></div>
+	<div class="imgBx"><img src="3.jpg"></div>
+	<div class="imgBx"><img src="4.jpg"></div>
+	<div class="imgBx"><img src="5.jpg"></div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.1.1/gsap.min.js"></script>
+	<script type="text/javascript">
+		document.body.addEventListener("mousemove", e => {
+		  gsap.to(".imgBx", {
+		    x: e.clientX,
+		    y: e.clientY,
+		    stagger: -0.1
+		  })
+		})
+	</script>
+</body>
+</html>
