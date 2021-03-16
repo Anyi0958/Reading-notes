@@ -2583,3 +2583,4 @@ this.sayName = new Function() {};
 [16]: ./img/16-array.png "16-array"
 [17]: ./img/17-iterator.png "17-iterator"
 
+w
