@@ -7,6 +7,8 @@ svg-利用js-go生成仿真图 目录
 # 前言
 
 - 本程序基于`svg`建立的仿真图
+- 开始思考，这种图像和工具没有关系，而和算法有关系。所以在学习中，我需要学习的应该是如何用工具做结果，而非追求工具本身。
+- 绘图的方式有`canvas`和`svg`，相对来说，`svg`作为一种`xml`可以夸终端，而`canvas`则仅仅适合`web`
 
 注意：
 
@@ -154,5 +156,120 @@ func f(x, y float64) float64 {
     r := math.Hypot(x, y) // distance from (0,0)
     return math.Sin(r) / r
 }
+```
+
+# `canvas`展示
+
+```js
+const conf = {
+    width: 600,
+    height: 320,
+    cells: 100,
+    xyrange: 30.0,
+    angle: Math.PI / 6
+};
+
+conf.xyscale = conf.width/2/conf.xyrange,
+conf.zscale = conf.height * 0.4,
+conf.sinNum = Math.sin(conf.angle),
+conf.cosNum = Math.cos(conf.angle);
+
+// console.log(conf);
+
+let canvas = document.createElement('canvas');
+canvas.id = "canvas";
+
+document.body.insertBefore(canvas,null);
+
+document.getElementById('canvas').width = 800,
+document.getElementById('canvas').height = 600;
+
+let context = canvas.getContext('2d');
+context.lineWidth = 1;
+
+let Point = function(x, y) {
+    this.x = x;
+    this.y = y;
+}
+
+function corner(i, j) {
+    
+    let points = [];
+    let x = conf.xyrange * (parseFloat(i) / conf.cells - 0.5),
+        y = conf.xyrange * (parseFloat(j) / conf.cells - 0.5);
+    let r = Math.hypot(x,y),
+        z = isNaN(Math.sin(r) / r) ? 1 : Math.sin(r) / r;
+        
+    let sx = conf.width / 2 + (x - y) * conf.sinNum * conf.xyscale,
+        sy = conf.height / 2 + (x + y) * conf.cosNum * conf.xyscale - z * conf.zscale;
+        // console.log(sinNum);
+    // console.log(`${sx}, ${sy}`);
+    // if(sx === 300 && isNaN(sy))  console.log(`${sx}, ${Math.sin(r)}`);
+    points.push(new Point(sx, sy));
+    // console.log(`${points[0].x}, ${points[0].y}`);
+    return points;
+}
+
+let moveToFunc =  CanvasRenderingContext2D.prototype.moveTo;
+CanvasRenderingContext2D.prototype.moveTo = function(x,y) {
+    moveToFunc.apply(context, [x,y]);
+
+    this.startX = x;
+    this.startY = y;
+}
+
+
+let lineToFunc = CanvasRenderingContext2D.prototype.lineTo;
+CanvasRenderingContext2D.prototype.lineTo = function(x,y){
+    lineToFunc.apply(context, [x,y]);
+    // console.log(`${this.startX}, ${this.startY.toFixed(0)}, ${x.toFixed(0)}, ${y.toFixed(0)}`);
+    let grd = context.createLinearGradient(this.startX.toFixed(0), Math.floor(this.startY), Math.floor(x),Math.floor(y));
+    
+    grd.addColorStop(0.2, '#aaff00');
+    grd.addColorStop(0.8, '#ff0000');
+
+    context.strokeStyle = grd;
+
+    this.startX = x;
+    this.startY = y;
+}
+
+function getPolygonPoints() {
+    
+    for(let i = 0; i < conf.cells; i++) {
+        for(let j = 0; j < conf.cells; j++){
+            let ax = corner(i+1, j)[0].x,
+                ay = corner(i+1,j)[0].y,
+
+                bx = corner(i,j)[0].x,
+                by = corner(i,j)[0].y,
+
+                cx = corner(i,j+1)[0].x,
+                cy = corner(i,j+1)[0].y,
+
+                dx = corner(i+1,j+1)[0].x,
+                dy = corner(i+1,j+1)[0].y;
+            // console.log(`i:${i}, j:${j} -- ${ax},${ay} ${bx},${by} ${cx},${cy} ${dx},${dy}`);
+
+            context.save();
+            
+            context.beginPath();
+            context.moveTo(ax,ay);
+            
+            context.lineTo(bx,by);
+            context.lineTo(cx,cy);
+            context.lineTo(dx,dy);
+
+            context.closePath();
+            context.stroke();
+
+            context.restore();
+            
+        }
+    }
+
+}
+
+getPolygonPoints();
 ```
 

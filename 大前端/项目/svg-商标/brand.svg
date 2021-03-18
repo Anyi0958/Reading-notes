@@ -1,0 +1,7 @@
+<svg width="500" height="500" viewBox="0 0 240 240"     xmlns="http://www.w3.org/2000/svg">
+<path d="M 20,20 30,10 40,20 30,30 Z" />
+<polygon points="10,80 20,73 35,82 22,90" />
+<polygon points="32,100 39,92 47,101 36,110" />
+<polygon points="90,10 80,130 110,150" />
+<polygon points="130,10 140,130 130,150" style="fill: #aaddcc" />
+</svg>

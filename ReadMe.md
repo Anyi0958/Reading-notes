@@ -12,7 +12,7 @@
 
 - 鸟叔Linux三，四
 - Shell
-- JavaScript学习指南
+- JavaScript学习指南 - 完成
 - NodeJS
 - C primer plus
 - 数据结构 - 2.4
@@ -23,12 +23,12 @@
 - JS学习指南里的推荐阅读
 - Promise应用 - 2.12
 - 算法
-- Leetcode
+- `Leetcode`
 - Postfix文档 - 完成
 - 面试总结 - 2.2
-- FreeCodeCamp
+- `FreeCodeCamp`
 - 英语口语与听力 - per day
-- KAUST mail server
+- `KAUST mail server`
 
 # 健身
 
