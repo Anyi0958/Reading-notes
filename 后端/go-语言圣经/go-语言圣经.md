@@ -1237,6 +1237,32 @@ func main() {
 }
 ```
 
+- 拓扑排序
+
+```go
+// prereqs记录了每个课程的前置课程
+var prereqs = map[string][]string{
+    "algorithms": {"data structures"},
+    "calculus": {"linear algebra"},
+    "compilers": {
+        "data structures",
+        "formal languages",
+        "computer organization",
+    },
+    "data structures":       {"discrete math"},
+    "databases":             {"data structures"},
+    "discrete math":         {"intro to programming"},
+    "formal languages":      {"discrete math"},
+    "networks":              {"operating systems"},
+    "operating systems":     {"data structures", "computer organization"},
+    "programming languages": {"data structures", "computer organization"},
+}
+```
+
+
+
+
+
 ## 习题
 
 **练习5.10：** 重写topoSort函数，用map代替切片并移除对key的排序代码。验证结果的正确性（结果不唯一）。
@@ -1261,5 +1287,48 @@ images := ElementsByTagName(doc, "img")
 headings := ElementsByTagName(doc, "h1", "h2", "h3", "h4")
 ```
 
+## 可变参数
+
+- 参数数量可变的函数
+
+```go
+func sum(vals ...int) int {
+    total := 0
+    for _, val := range vals {
+        total += val
+    }
+    return total
+}
+```
+
+
+
 ## `Deferred`函数
+
+```go
+func title(url string) error {
+    resp, err := http.Get(url)
+    if err != nil {
+        return err
+    }
+    // Check Content-Type is HTML (e.g., "text/html;charset=utf-8").
+    ct := resp.Header.Get("Content-Type")
+    if ct != "text/html" && !strings.HasPrefix(ct,"text/html;") {
+        resp.Body.Close()
+        return fmt.Errorf("%s has type %s, not text/html",url, ct)
+    }
+    doc, err := html.Parse(resp.Body)
+    resp.Body.Close()
+    if err != nil {
+        return fmt.Errorf("parsing %s as HTML: %v", url,err)
+    }
+    visitNode := func(n *html.Node) {
+        if n.Type == html.ElementNode && n.Data == "title"&&n.FirstChild != nil {
+            fmt.Println(n.FirstChild.Data)
+        }
+    }
+    forEachNode(doc, visitNode, nil)
+    return nil
+}
+```
 

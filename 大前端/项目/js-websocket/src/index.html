@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <input id="input" style="width: 100%;">
+<script>
+        window.onload = function () {
+            let nick = prompt("Enter your name:"),
+                input = document.getElementById('input');
+                input.focus();
+            
+            // 打开一个webSocket，用于发送和接收聊天信息
+            // 假设下载的http服务器作为websocket服务器运作，并且使用同样的主机名和端口
+            // 只是协议由 http:// 变成 ws://
+            let socket = new WebSocket("wss://localhost:8000/");
+
+            // 如何通过websocket从服务器获取消息
+            // 收到一条消息时
+            socket.onmessage = function(event) {
+                let msg = event.data,
+                    node = document.createTextNode(msg),
+                    div = document.createElement("div");
+                div.appendChild(node);
+                document.body.insertBefore(div, input);
+                input.scrollIntoView();
+            }
+
+            // 下面展示了如何通过websocket发送消息给服务器端
+            input.onchange = function() {
+                let msg = nick + ':' + input.value;
+                socket.onopen = event => {
+                    socket.send(msg);
+                }
+                input.value = "";
+            }
+            
+            socket.onmessage = function(e) {
+                    let message = e.data;
+                    console.log(e);
+            }
+        };
+</script>
+</body>
+</html>

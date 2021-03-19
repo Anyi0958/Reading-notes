@@ -289,6 +289,7 @@ for _, num := range nums {
 ```go
 var countryCapitalMap map[string]string /*创建集合 */
 countryCapitalMap = make(map[string]string)
+test := map[string]string{}
 ```
 
 ## 类型转换
