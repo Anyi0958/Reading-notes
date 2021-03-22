@@ -561,6 +561,7 @@ myConnection.ontrack = function(stream) {
 ![2-WebRTCframework][02]
 
 ## STUN
+
 使用STUN协议需要由一个支持STUN协议的服务器
 - 建立高质量的WebRTC应用实际上需要多个服务器，需要提供一套STUN和TURN服务器
 
