@@ -1,4 +1,7 @@
-let myConnection = new RTCPeerConnection();
-myConnection.addtrack = function(stream) {
+let configuration = {
+    bundlePolicy: "max-compat"
+};
+
+myConnection.addTrack = function(stream) {
     console.log(stream);
 };

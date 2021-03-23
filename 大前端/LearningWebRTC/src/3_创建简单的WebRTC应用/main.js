@@ -15,7 +15,9 @@ function hasRTCPeerConnection() {
 
 function startPeerConnection(stream) {
     let configuration = {
-        "iceServers": [{"url": "stun:127.0.0.1:9876"}]
+        "iceServers": [
+            {"url": "stun:127.0.0.1:9876"}
+        ]
     };
 
     yourConnection = new webkitRTCPeerConnection(configuration);
@@ -45,7 +47,7 @@ function startPeerConnection(stream) {
         });
     });
 
-    // 监听流创建
+     // 监听流创建
     stream.getTracks().forEach(track => {
         yourConnection.addTrack(track, stream);
         theirConnection.onTrack = event => {
@@ -56,7 +58,7 @@ function startPeerConnection(stream) {
             }
 
         };
-    });
+    }); 
     
 }
 
