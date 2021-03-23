@@ -1,12 +1,42 @@
+// 变量声明
 let name,
     connectedUser;
 
 let connection = new WebSocket('ws://localhost:8888');
 
+let yourVideo = document.querySelector('#yours'),
+    theirVideo = document.querySelector('#theirs'),
+    yourConnection,
+    stream;
+
+let loginPage = document.querySelector('#login-page'),
+    usernameInput = document.querySelector('#username'),
+    loginButton = document.querySelector('#login'),
+    callPage = document.querySelector('#call-page'),
+    theirUsernameInput = document.querySelector('#their-username'),
+    callButton = document.querySelector('#call'),
+    hangUpButton = document.querySelector('#hang-up');
+
+callPage.style.display = 'none';
+
+// 点击按钮登录
+loginButton.addEventListener('click', event=>{
+    name = usernameInput.value;
+
+    if(name.length > 0){
+        send({
+            type: "login",
+            name: name
+        });
+    }
+});
+
+// websocket 连接
 connection.onopen = function() {
     console.log("Connected");
 };
 
+// 监听websocket信息
 connection.onmessage = function(message){
     console.log("Got message", message.data);
 
@@ -33,10 +63,12 @@ connection.onmessage = function(message){
     }
 };
 
+// websocket报错信息
 connection.onerror = function(err) {
     console.log(err);
 }
 
+// Alia 以JSON格式发送信息
 function send(message) {
     if(connectedUser) {
         message.name = connectedUser;
@@ -44,27 +76,6 @@ function send(message) {
 
     connection.send(JSON.stringify(message));
 }
-
-let loginPage = document.querySelector('#login-page'),
-    usernameInput = document.querySelector('#username'),
-    loginButton = document.querySelector('#login'),
-    callPage = document.querySelector('#call-page'),
-    theirUsernameInput = document.querySelector('#their-username'),
-    callButton = document.querySelector('#call'),
-    hangUpButton = document.querySelector('#hang-up');
-
-callPage.style.display = 'none';
-
-loginButton.addEventListener('click', event=>{
-    name = usernameInput.value;
-
-    if(name.length > 0){
-        send({
-            type: "login",
-            name: name
-        });
-    }
-});
 
 function onLogin(success) {
     if(success === false){
@@ -76,14 +87,89 @@ function onLogin(success) {
 
     // 准备好通话的通道
     startConnection();
-
 }
 
-let yourVideo = document.querySelector('#yours'),
-    theirVideo = document.querySelector('#theirs'),
-    yourConnection,
-    stream;
+// call呼叫
+callButton.addEventListener('click', function(){
+    let theirUsername = theirUsernameInput.value;
 
+    if(theirUsername.length > 0){
+        startPeerConnection(theirUsername);
+    }
+});
+
+// 挂断
+hangUpButton.addEventListener("click", ()=>{
+    send({
+        type: "leave"
+    });
+
+    onLeave();
+});
+
+function onOffer(offer, name) {
+    connectedUser = name;
+    yourConnection.setRemoteDescription(new RTCSessionDescription(offer));
+
+    yourConnection.createAnswer(function(answer){
+        yourConnection.setLocalDescription(answer);
+
+        send({
+            type: "answer",
+            answer: answer
+        });
+    },
+    err =>{
+        alert("An error");
+    }
+    );
+}
+
+function onAnswer(answer){
+    yourConnection.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+function onCandidate(candidate){
+    yourConnection.addIceCandidate(new RTCIceCandidate(candidate));
+}
+
+
+function onLeave() {
+    connectedUser = null;
+    theirVideo.srcObject = null;
+    yourConnection.close();
+    yourConnection.onicecandidate = null;
+    yourConnection.onaddstream = null;
+    setupPeerConnection(stream);
+}
+
+
+// 函数的polyfill
+function hasUserMedia() {
+    navigator.getUserMedia = navigator.getUserMedia
+                        || navigator.webkitGetUserMedia
+                        || navigator.mozGetUserMedia
+                        || navigator.msGetUserMedia;
+    return !!navigator.getUserMedia;
+}
+
+function hasRTCPeerConnection() {
+    window.RTCPeerConnection = window.RTCPeerConnection
+                            || window.webkitRTCPeerConnection
+                            || window.mozRTCPeerConnection;
+
+    window.RTCSessionDescription = window.RTCSessionDescription
+                            || window.webkitRTCSessionDescription
+                            || window.mozRTCSessionDescription;
+    
+    window.RTCIceCandidate = window.RTCIceCandidate
+                            || window.webkitRTCIceCandidate
+                            || window.mozeRTCIceCandidate;
+
+    return !!window.RTCPeerConnection;
+}
+
+// 开始连接
 function startConnection() {
     if(hasUserMedia()){
         navigator.getUserMedia({
@@ -114,6 +200,7 @@ function startConnection() {
     }
 }
 
+// 
 function setupPeerConnection(stream) {
     let configuration = {
         "iceServers":[
@@ -132,7 +219,7 @@ function setupPeerConnection(stream) {
             theirVideo.srcObject = stream;
         }
     };
-
+    // 设置ICE处理事件
     yourConnection.onicecandidate = function(event) {
         if(event.candidate){
             send({
@@ -143,38 +230,7 @@ function setupPeerConnection(stream) {
     };
 }
 
-function hasUserMedia() {
-    navigator.getUserMedia = navigator.getUserMedia
-                        || navigator.webkitGetUserMedia
-                        || navigator.mozGetUserMedia
-                        || navigator.msGetUserMedia;
-    return !!navigator.getUserMedia;
-}
-
-function hasRTCPeerConnection() {
-    window.RTCPeerConnection = window.RTCPeerConnection
-                            || window.webkitRTCPeerConnection
-                            || window.mozRTCPeerConnection;
-
-    window.RTCSessionDescription = window.RTCSessionDescription
-                            || window.webkitRTCSessionDescription
-                            || window.mozRTCSessionDescription;
-    
-    window.RTCIceCandidate = window.RTCIceCandidate
-                            || window.webkitRTCIceCandidate
-                            || window.mozeRTCIceCandidate;
-
-    return !!window.RTCPeerConnection;
-}
-
-callButton.addEventListener('click', function(){
-    let theirUsername = theirUsernameInput.value;
-
-    if(theirUsername.length > 0){
-        startPeerConnection(theirUsername);
-    }
-});
-
+// 开始创建offer
 function startPeerConnection(user) {
     connectedUser = user;
 
@@ -191,28 +247,44 @@ function startPeerConnection(user) {
     });
 }
 
-function onOffer(offer, name) {
-    connectedUser = name;
-    yourConnection.setRemoteDescription(new RTCSessionDescription(offer));
+yourConnection = new RTCPeerConnection(),
+    received = document.getElementById("received");
 
-    yourConnection.createAnswer(function(answer){
-        yourConnection.setLocalDescription(answer);
 
-        send({
-            type: "answer",
-            answer: answer
-        });
-    },
-    err =>{
-        alert("An error");
+function openDataChannel() {
+    let dataChannelOptions = {
+        reliable: true
+    };
+
+    dataChannel = yourConnection.createDataChannel("myLabel", dataChannelOptions);
+
+    dataChannel.onerror = function (error){
+        console.log("Data Channel Error: ", error);
     }
-    );
+
+    dataChannel.onmessage = function (event) {
+        console.log("Got Data Channel Message: ", event.data);
+
+        received.innerHTML += "recv: " + event.data + "<br />";
+        received.scrollTop = received.scrollHeight;
+    };
+
+    dataChannel.onopen = function () {
+        dataChannel.send(name + "has connected.");
+    };
+
+    dataChannel.onclose = function (){
+        console.log("The data channel is closed");
+    };
 }
 
-function onAnswer(answer){
-    yourConnection.setRemoteDescription(new RTCSessionDescription(answer));
-}
+//绑定文本输入框和消息接收区
+let sendButton = document.getElementById('send'),
+    messageInput = document.getElementById('message');
 
-function onCandidate(candidate){
-    yourConnection.addIceCandidate(new RTCIceCandidate(candidate));
-}
+sendButton.addEventListener('click', event => {
+    let val = messageInput.value;
+    received.innerHTML += "send: " + val + "<br />";
+    received.scrollTop = received.scrollHeight;
+    dataChannel.send(val);
+});
