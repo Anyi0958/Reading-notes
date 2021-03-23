@@ -87,7 +87,7 @@ wss.on("connection", connection => {
                 break;
                 
             default:
-                sendTo(connection, {
+                sendTo(conn, {
                     type: "error",
                     message: "Unrecognized command: " + data.type
                 });
