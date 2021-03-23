@@ -6,6 +6,7 @@
 
 - 面试常问三问题
 - 宏微任务面对异步事件
+- [宏微事件、Event-Loop](https://cloud.tencent.com/developer/article/1476737)
 
 # 推荐阅读
 
