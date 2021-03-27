@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<!--  UC浏览器+全屏模式  -->
+    <meta name="browsermode" content="application">
+    <meta name="full-screen" content="yes">
+<!-- QQ 浏览器 -->
+    <meta name="x5-page-mode" content="app">
+    <meta name="x5-fullscreen" content="treu">
+<!-- 360 浏览器 -->
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>魔塔游戏</title>
+<!-- icon -->
+    <link rel="shortcut icon" type="image/x-icon" href="">
+    <!-- css -->
+    <link rel="stylesheet" type="text/css" href="style/css/Layout.css">
+</head>
+<body>
+    <!-- 游戏容器 -->
+<div id="GameGroup">
+    <!-- 开始界面 -->
+    <div id="GameStart">
+        <p id="LoadTip">Loading</p>
+        <div id="LoadProgressBar">
+            <div id="LoadProgress"></div>
+        </div>
+    </div>
+    <!-- 画布容器 -->
+    <div id="CanvasGroup">
+        <h1 id="GameLoading">Drawing</h1>
+        <!-- status -->
+        <canvas id="status" ></canvas>
+        <!-- bg -->
+        <canvas id="Mapbg" ></canvas>
+        <!-- event -->
+        <canvas id="MapEvent" ></canvas>
+        <!-- fg -->
+        <canvas id="MapFg" ></canvas>
+        <!-- UI -->
+        <canvas id="SystemUI"></canvas>
+        <!-- data view -->
+        <canvas id="DataView"></canvas>
+    </div>
+    <!-- tool -->
+    <div id="ToolGroup">
+
+    </div>
+    <!-- controller -->
+    <div id="ControlGroup"></div>
+</div>
+</body>
+<script src="js/Items.js"></script>
+</html>

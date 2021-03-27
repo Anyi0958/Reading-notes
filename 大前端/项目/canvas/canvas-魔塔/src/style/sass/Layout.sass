@@ -1,0 +1,44 @@
+// Variable
+$padding: 0px
+$canvasWidth: 352px
+$canvasHeight: 352px
+$margin: 0
+$padding: 0
+$backgroundColor: #000000
+
+// font
+@font-face {
+    font-family: "Mota";
+    src: url("/style/font/Word.ttf");
+}
+
+html, body {
+    margin: $margin;
+    padding: $padding;
+    background-color: $backgroundColor;
+}
+
+#GameStart {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: $margin;
+    padding: $padding;
+    background-color: $backgroundColor;
+    z-index: 50;
+    background-image: url(/resource/bg/Floor.png);
+}
+
+
+
+canvas {
+    width: $canvasWidth;
+    height: $canvasHeight;
+}
+
+#Property {
+    $canvasHeight: 512px;
+    height: $canvasHeight;    
+}
