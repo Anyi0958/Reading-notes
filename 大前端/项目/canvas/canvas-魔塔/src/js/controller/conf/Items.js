@@ -286,8 +286,9 @@ const ItemSet = new Map([
  */
 const ItemsData = function(dataType, ID){
     // let items = eval("ItemSet." + dataType);
+    
     let items = ItemSet.has(dataType) ? ItemSet.get(dataType) : 'error';
-
+    // console.log(items[1]);
     if(typeof(ID) !== 'undefined') {
         // Binary Search
         let min = 0,
@@ -316,3 +317,6 @@ for(let i of ItemSet.keys()){
 }
 // console.log(index);
 console.log(new Date()); */
+// console.log(new Date());
+// console.log(ItemsData('All', 1));
+export {ItemSet, ItemsData};

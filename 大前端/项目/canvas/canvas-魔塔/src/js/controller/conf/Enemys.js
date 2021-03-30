@@ -104,8 +104,10 @@ const EnemysData = function(dataType, ID){
 }
 
 // 测试
-for(let i in EnemySet){
-    let index = Math.floor(Math.random()*(EnemySet[i].length+1)),
+/* for(let i in EnemySet){
+    let index = Math.floor(Math.random()*(EnemySet[i].length)),
         test = EnemysData(i, index);
     console.log(test);
-}
+} */
+
+export {EnemySet, EnemysData};
