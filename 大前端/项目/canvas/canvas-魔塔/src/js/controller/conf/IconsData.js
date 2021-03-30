@@ -277,7 +277,8 @@ const IconsData = function(dataType, ID){
 /* 
 for(let i in IconSet){
     console.log(i);
-    let index = Math.floor(Math.random()*(IconSet[i].length+1));
+    let index = Math.floor(Math.random()*(IconSet[i].length));
     test = IconsData(i, index);
     console.log(test);
 } */
+export {IconSet, IconsData};
